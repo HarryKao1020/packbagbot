@@ -78,6 +78,8 @@ def start(bot, update):
     update.message.reply_text('請問這次要去哪裡玩呢？',reply_markup=reply_markup)
     return DIRECTION
 
+
+
 def selcounty(bot, update):
     UserID = update.callback_query.from_user['id']
     query = update.callback_query
