@@ -32,7 +32,7 @@ tmpplacedetail = {} #紀錄地點詳細資訊
 tmpregion = {} #紀錄地區
 tmptypes= {} #紀錄類型次數
 
-
+#################### web app
 @application.route('/')
 def index():
     return "<h1>Hello World!</h1>"
@@ -49,6 +49,9 @@ def webhook_handler():
 @application.route('/schedule')
 def sched():
     return render_template('index.html')
+
+#######################
+#telegram bot
 
 def greet(bot, update):
     update.message.reply_text('HI~我是旅泊包🎒 \n 我能依照你的喜好，推薦熱門景點給你')
@@ -257,7 +260,7 @@ def placedetail(bot, update):  #按鈕暫時無作用
         reply_markup=reply_markup
     )
 
-def returnbutton(bot, update):
+def returnplace(bot, update):
     UserID = update.callback_query.from_user['id']
     keyboard = placebuttontmp[UserID]
     query = update.callback_query
@@ -422,7 +425,7 @@ conv_handler = ConversationHandler(
                     MessageHandler(Filters.regex('^(高鐵🚅)$'), place_choose),
             ],
             PLACE:[CommandHandler('restart', restart),
-                CallbackQueryHandler(returnbutton, pattern='^(上一頁)$'),
+                CallbackQueryHandler(returnplace, pattern='^(上一頁)$'),
                 CallbackQueryHandler(confirmbutton, pattern='^' + str(confirmbutton) + '$'),
                 CallbackQueryHandler(placedetail),
                 CommandHandler('next', place_choose),
