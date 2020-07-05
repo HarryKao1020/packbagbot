@@ -90,6 +90,15 @@ def getPlaceDetail(data):
 
 	return PlaceDetail
 
+def getTnames(data):
+	connection = sqlite3.connect('db/test.db')
+	c = connection.cursor()
+	c.execute("SELECT Tname FROM User WHERE UserID LIKE? ",data)
+	Tnames = c.fetchall()
+
+	return Tnames
+
+
 
 def Deleterecord(ID):
 	connection = sqlite3.connect('db/test.db')

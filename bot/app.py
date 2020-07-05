@@ -56,8 +56,16 @@ def sched():
 
 def greet(bot, update): #機器人打招呼
     update.message.reply_text('HI~我是旅泊包🎒 \n 我能依照你的喜好，推薦熱門景點給你')
-    update.message.reply_text('準備要去旅行了嗎 ٩(ˊᗜˋ*)و \n立即輸入 /letsgo 開始使用！')
+    update.message.reply_text('準備要去旅行了嗎 ٩(ˊᗜˋ*)و \n立即輸入 /letsgo 開始使用！\n 如果要參考歷史行程請輸入 /History')
 
+def history(bot, update):#查詢行程
+    UserID = update.message.from_user['id']
+    Tnames = db.getTnames([UserID]) #出來是 tunlp ex:[('name1',),('name2',)]
+    reply = '這是你過去安排的行程:\n'
+    print(Tnames)
+    for Tname in Tnames:
+        reply = reply + Tname[0] + '\n'
+    update.message.reply_text(reply)
 
 def naming(bot, update):  #行程名稱取名
     logger.info("username: %s start",update.message.from_user)
@@ -456,6 +464,7 @@ dispatcher = Dispatcher(bot, None)
 # message.
 
 dispatcher.add_handler(conv_handler)
+dispatcher.add_handler(CommandHandler('History', history))
 dispatcher.add_handler(CommandHandler('help', help_handler))
 dispatcher.add_handler(CommandHandler('start', greet))
 dispatcher.add_handler(CommandHandler('restart', restart))
