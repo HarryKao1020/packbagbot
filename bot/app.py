@@ -23,7 +23,7 @@ application = Flask(__name__)
 # Initial bot by Telegram access token
 bot = telegram.Bot(token=(config['TELEGRAM']['ACCESS_TOKEN']))
 
-NAMING, DIRECTION, COUNTY, TYPE_ONE, TYPE_TWO, TYPE_THREE, TRAFFIC, PLACE, PLACE_TWO, = range(9)
+NAMING, DIRECTION, COUNTY, TYPE_ONE, TYPE_TWO, TYPE_THREE, TRAFFIC, PLACE, PLACE_TWO,HISTORY = range(10)
 travelname = {} #紀錄使用者當前行程名稱
 cntplace = {} #紀錄使用者安排景點數量
 tmpplace = {} #暫存使用者選擇景點
@@ -58,14 +58,53 @@ def greet(bot, update): #機器人打招呼
     update.message.reply_text('HI~我是旅泊包🎒 \n 我能依照你的喜好，推薦熱門景點給你')
     update.message.reply_text('準備要去旅行了嗎 ٩(ˊᗜˋ*)و \n立即輸入 /letsgo 開始使用！\n 如果要參考歷史行程請輸入 /History')
 
+
+#######    history_conv            #######
 def history(bot, update):#查詢行程
     UserID = update.message.from_user['id']
+
+    
     Tnames = db.getTnames([UserID]) #出來是 tunlp ex:[('name1',),('name2',)]
-    reply = '這是你過去安排的行程:\n'
-    print(Tnames)
-    for Tname in Tnames:
-        reply = reply + Tname[0] + '\n'
-    update.message.reply_text(reply)
+    if Tnames:
+        reply = '這是你過去安排的行程:\n'
+        keyboard = []
+        
+        for Tname in Tnames:
+            keyboard.append([InlineKeyboardButton(Tname[0], callback_data=Tname[0])],)
+        
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        update.message.reply_text(reply,reply_markup=reply_markup)
+    else:
+        reply = '你還沒有安排拉'
+        update.message.reply_text(reply)
+        return ConversationHandler.END
+    
+
+    return HISTORY
+
+
+    
+def history_output(bot, update): #列出歷史行程的景點
+    query = update.callback_query
+    UserID = query.from_user['id']
+    Tname = query.data
+    
+
+    
+    landmarks = list(db.getPLACE([UserID,Tname]))
+    i = 1
+    place_output = ""
+    for landmark in landmarks:
+        if landmark:
+            place_output += str(i) +". "+landmark + "\n"
+            i += 1
+        else:
+            break
+
+    query.edit_message_text(place_output)
+    return ConversationHandler.END
+#############################
+
 
 def naming(bot, update):  #行程名稱取名
     logger.info("username: %s start",update.message.from_user)
@@ -286,7 +325,7 @@ def returnplace(bot, update):
 
     return PLACE
 
-# def placeforcar(bot, update):
+def placeforcar(bot, update):
     UserID = update.message.from_user['id']
     logger.info("%s prees 自行前往", UserID)
     
@@ -455,6 +494,14 @@ conv_handler = ConversationHandler(
         fallbacks=[CommandHandler('restart', restart),MessageHandler(Filters.regex('^Done$'), done)]
     )
 
+
+history_handler = ConversationHandler(
+     entry_points = [CommandHandler('History', history)],
+     states = {
+         HISTORY:[CallbackQueryHandler(history_output),]
+     },
+     fallbacks=[]
+ )
 # New a dispatcher for bot
 dispatcher = Dispatcher(bot, None)
 
@@ -464,7 +511,7 @@ dispatcher = Dispatcher(bot, None)
 # message.
 
 dispatcher.add_handler(conv_handler)
-dispatcher.add_handler(CommandHandler('History', history))
+dispatcher.add_handler(history_handler)
 dispatcher.add_handler(CommandHandler('help', help_handler))
 dispatcher.add_handler(CommandHandler('start', greet))
 dispatcher.add_handler(CommandHandler('restart', restart))
