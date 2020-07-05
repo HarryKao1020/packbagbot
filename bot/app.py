@@ -31,6 +31,7 @@ placebuttontmp = {} #暫存使用者按鈕資料
 tmpplacedetail = {} #紀錄地點詳細資訊
 tmpregion = {} #紀錄地區
 tmptypes= {} #紀錄類型次數
+tmpcounty= {} #紀錄縣市
 
 #################### web app
 @application.route('/')
@@ -53,20 +54,21 @@ def sched():
 #######################
 #telegram bot
 
-def greet(bot, update):
+def greet(bot, update): #機器人打招呼
     update.message.reply_text('HI~我是旅泊包🎒 \n 我能依照你的喜好，推薦熱門景點給你')
     update.message.reply_text('準備要去旅行了嗎 ٩(ˊᗜˋ*)و \n立即輸入 /letsgo 開始使用！')
 
 
-def naming(bot, update):
+def naming(bot, update):  #行程名稱取名
     logger.info("username: %s start",update.message.from_user)
     update.message.reply_text('請先替這次行程取個名字')
     return NAMING
 
-def start(bot, update):
+def start(bot, update): #選擇區域
     UserID = update.message.from_user['id']
-    travelname.update( { UserID : update.message.text} )
-    db.setTname([UserID,travelname[UserID]])
+    if update.message.text != '/return':
+        travelname.update( { UserID : update.message.text} )
+    
     logger.info("username: %s start",update.message.from_user)
     keyboard = [
         [InlineKeyboardButton("北部", callback_data='North'),
@@ -80,7 +82,7 @@ def start(bot, update):
 
 
 
-def selcounty(bot, update):
+def selcounty(bot, update): #選擇縣市
     UserID = update.callback_query.from_user['id']
     query = update.callback_query
     
@@ -133,24 +135,28 @@ def selcounty(bot, update):
 
 
 
-def button(bot, update):
+def button(bot, update):  #確定選擇縣市
     UserID = update.callback_query.from_user['id']
     query = update.callback_query
     logger.info("username: %s chooses %s",update.callback_query.from_user['id'],query.data)
+    tmpcounty.update( {UserID:query.data} )
     
-    db.setCOUNTY([query.data, UserID, travelname[UserID]])
     reply_text=["我也喜歡"+query.data+"🙆",
                 "我超愛"+query.data+"👏",
                 query.data+"確實是個好玩的地方👍"]
     i = random.randint(0,2)
-    query.edit_message_text(reply_text[i]+"\n確認地點沒問題的話請幫我點選👇\n               /chooseOK")
+    query.edit_message_text(reply_text[i]+"\n確認地點沒問題的話請幫我點選👇\n /chooseOK\n"+"如果想更換地點請幫我選👇\n /return\n")
     
     return COUNTY
 
 
 #####type#######
 def type_one(bot, update):
-    
+    UserID = update.message.from_user['id']
+
+    db.setTname([UserID,travelname[UserID]]) #儲存旅遊名稱
+    db.setCOUNTY([tmpcounty[UserID], UserID, travelname[UserID]]) #儲存縣市
+
     reply_keyboard=[['特色商圈','古蹟廟宇'],['人文藝術','景觀風景'],['休閒農業','戶外休閒'],['主題樂園','無礙障旅遊']]
     update.message.reply_text('請問有什麼想去的景點類型呢？',reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
     return TYPE_ONE
@@ -410,6 +416,7 @@ conv_handler = ConversationHandler(
             COUNTY: [ CallbackQueryHandler(start, pattern='^' + str(start) + '$'),
                       CallbackQueryHandler(button),
                       MessageHandler(Filters.regex('^(/chooseOK)$'), type_one),
+                      MessageHandler(Filters.regex('^(/return)$'), start),
                       MessageHandler(Filters.regex('^(Ok)$'), type_one),
                       MessageHandler(Filters.regex('^(OK)$'), type_one)],
             TYPE_ONE: [
