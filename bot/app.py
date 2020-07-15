@@ -6,7 +6,7 @@ from flask import Flask, request, render_template
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, ConversationHandler, Dispatcher, CallbackQueryHandler
 import db
-from place.PAPI import getNear, getPlace
+from place.PAPI import getNear, getPlace, getSearch
 
 #Load data from config.ini file
 config = configparser.ConfigParser()
@@ -23,7 +23,7 @@ application = Flask(__name__)
 # Initial bot by Telegram access token
 bot = telegram.Bot(token=(config['TELEGRAM']['ACCESS_TOKEN']))
 
-NAMING, DIRECTION, COUNTY, TYPE_ONE, TYPE_TWO, TYPE_THREE, TRAFFIC, PLACE, PLACE_TWO,HISTORY = range(10)
+NAMING, DIRECTION, COUNTY, TYPE_ONE, TYPE_TWO, TYPE_THREE, TRAFFIC, SEARCH_PLACE, PLACE, PLACE_TWO,HISTORY = range(11)
 travelname = {} #紀錄使用者當前行程名稱
 cntplace = {} #紀錄使用者安排景點數量
 tmpplace = {} #暫存使用者選擇景點
@@ -247,7 +247,21 @@ def traffic(bot, update):
         db.setTYPE_three([Text,UserID,travelname[UserID]])
 
     logger.info("type is %s form %s",update.message.text,update.message.from_user)
-    reply_keyboard=[['客運🚌','火車🚂'],['高鐵🚅','開車🚘']]
+    reply_keyboard=[['大眾運輸🚌','其他🚂']]
+    update.message.reply_text('想如何前往呢？',reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
+    return TRAFFIC
+
+def traffic2(bot, update):
+    UserID = update.message.from_user['id']
+    Text = update.message.text
+    cntplace.update( {UserID:1} )
+    print(Text)
+    if Text != '/done':
+        Text = Text.replace(" ","")
+        db.setTYPE_three([Text,UserID,travelname[UserID]])
+
+    logger.info("type is %s form %s",update.message.text,update.message.from_user)
+    reply_keyboard=[['客運🚌','火車🚂','高鐵🚅']]
     update.message.reply_text('想如何前往呢？',reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
     return TRAFFIC
 
@@ -390,21 +404,82 @@ def place_choose(bot, update):
     keyboard = button
     placebuttontmp.update({UserID:keyboard})
     markup = InlineKeyboardMarkup(keyboard)
-    update.message.reply_text('下個景點想去哪呢？',reply_markup=markup)
-
-
-
+    update.message.reply_text('下列景點想去哪裡玩呢？',reply_markup=markup)
 
     return PLACE
 
 
+def place_fork(bot,update):
+    UserID = update.message.from_user['id']
+    logger.info("%s prees 自行前往", UserID)
+
+    update.message.reply_text('想要自己選擇景點請輸入景點名稱\n如果希望由旅泊包安排請點選👇\n/go')
+    
+    return SEARCH_PLACE
+    
+def search_placedetail(bot, update):  #按鈕暫時無作用
+    UserID = update.message.from_user['id']
+    Text = update.message.text
+    Text = Text.replace(" ","")
+    
+    detail=getSearch(Text)['result']
+    name = detail['name']
+    rating = str(detail['rating'])
+    address = detail['formatted_address']
+
+    try:
+        detail['weekday_text']
+    except:
+        time = "尚未提供營業時間" + "\n"
+    else:
+        time =  detail['weekday_text'][0]+"\n"+detail['weekday_text'][1]+"\n"+detail['weekday_text'][2]+"\n"+detail['weekday_text'][3]+"\n"+detail['weekday_text'][4]+"\n"+detail['weekday_text'][5]+"\n"+detail['weekday_text'][6]+"\n"
+
+    try:
+        detail['formatted_phone_number']
+    except:
+        phone = "尚未提供電話" + "\n"
+    else:
+        phone = detail['formatted_phone_number']
 
 
+    tmpplace.update( {UserID:name} )
+    tmpplacedetail.update( {UserID:[name,address,rating,phone,time]} )
+    
+    keyboard = [
+        [InlineKeyboardButton("上一頁", callback_data="上一頁")],
+        [InlineKeyboardButton("加入景點", callback_data=str(search_confirmbutton))],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    
+    
+    update.message.reply_text(
+        text="🔹名稱: "+name+"\n"+
+        "🔹評價"+rating+" / 5\n"+
+        "🔹地址: "+address+"\n"+
+        "🔹電話："+phone+"\n"
+        "🔹營業時間: \n"+ time
+        
+        
+        ,
+        reply_markup=reply_markup
+    )
 
+    
+def search_confirmbutton(bot, update):
+    UserID = update.callback_query.from_user['id'] 
+    query = update.callback_query
+    print(tmpplace[UserID])
+    
+    db.setPlace(cntplace[UserID],[ tmpplace[UserID],UserID,travelname[UserID] ])
+    print(tmpplacedetail[UserID])
+    db.setPlacedetail(tmpplacedetail[UserID])
 
-
-
-
+    cntplace[UserID]+=1
+    print(cntplace[UserID])
+    
+    query.edit_message_text(text="如果要繼續輸入景點直接填寫，\n如果由旅泊包安排請輸入「 /done 」")
+    return SEARCH_PLACE
 
 
 
@@ -475,10 +550,17 @@ conv_handler = ConversationHandler(
                        CommandHandler('done', traffic),
                        MessageHandler(Filters.text, traffic),],
             TRAFFIC:[
-                    MessageHandler(Filters.regex('^(開車🚘)$'), place_choose),
-                    MessageHandler(Filters.regex('^(火車🚂)$'), place_choose),
-                    MessageHandler(Filters.regex('^(客運🚌)$'), place_choose),
-                    MessageHandler(Filters.regex('^(高鐵🚅)$'), place_choose),
+                    MessageHandler(Filters.regex('^(大眾運輸🚌)$'), traffic2),
+                    MessageHandler(Filters.regex('^(客運🚌)$'), place_fork),
+                    MessageHandler(Filters.regex('^(火車🚂)$'), place_fork),
+                    MessageHandler(Filters.regex('^(高鐵🚅)$'), place_fork),
+                    MessageHandler(Filters.regex('^(其他🚂)$'), place_fork),
+            ],
+            SEARCH_PLACE:[CommandHandler('restart', restart),
+                CommandHandler('go',place_choose),
+                MessageHandler(Filters.text, search_placedetail),
+                CallbackQueryHandler(search_confirmbutton, pattern='^' + str(search_confirmbutton) + '$'),
+                CommandHandler('done', place_choose),
             ],
             PLACE:[CommandHandler('restart', restart),
                 CallbackQueryHandler(returnplace, pattern='^(上一頁)$'),
