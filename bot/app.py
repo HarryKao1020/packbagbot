@@ -51,6 +51,7 @@ def webhook_handler():
 def sched():
     return render_template('index.html')
 
+
 #######################
 #telegram bot
 
@@ -424,8 +425,15 @@ def search_placedetail(bot, update):  #按鈕暫時無作用
     
     detail=getSearch(Text)['result']
     name = detail['name']
-    rating = str(detail['rating'])
+    
     address = detail['formatted_address']
+
+    try:
+        detail['rating']
+    except:
+        rating = "暫無資料"
+    else:
+       rating = str(detail['rating']) 
 
     try:
         detail['weekday_text']

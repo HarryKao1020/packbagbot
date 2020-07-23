@@ -106,3 +106,5 @@ def Deleterecord(ID):
 	c.execute("DELETE FROM User WHERE UserID LIKE? ",ID)
 	connection.commit()
 
+print(getTnames(['1144120088']))
+#print(getPlaceDetail( ['臺北市兒童新樂園'] ))
