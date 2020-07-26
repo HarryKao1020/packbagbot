@@ -566,9 +566,10 @@ conv_handler = ConversationHandler(
             ],
             SEARCH_PLACE:[CommandHandler('restart', restart),
                 CommandHandler('go',place_choose),
+                CommandHandler('done', place_choose),
                 MessageHandler(Filters.text, search_placedetail),
                 CallbackQueryHandler(search_confirmbutton, pattern='^' + str(search_confirmbutton) + '$'),
-                CommandHandler('done', place_choose),
+                
             ],
             PLACE:[CommandHandler('restart', restart),
                 CallbackQueryHandler(returnplace, pattern='^(上一頁)$'),
