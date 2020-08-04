@@ -33,21 +33,24 @@ def setTYPE_three(data):
 	c.execute("UPDATE User SET TYPE_three = ? WHERE UserID LIKE?  AND Tname LIKE?",data)
 	connection.commit()
 
-def setPlace(times,data):
+def setPlace(times,data): #data= [Place, UserID, Tname]
 	connection = sqlite3.connect('db/test.db')
 	c = connection.cursor()
-	print(data)
-	print(type(data))
+
 	if times == 1:
-		c.execute("UPDATE User SET Place_one = ? WHERE UserID LIKE?  AND Tname LIKE?",data)
-	elif times == 2:
-		c.execute("UPDATE User SET Place_two = ? WHERE UserID LIKE?  AND Tname LIKE?",data)
-	elif times == 3:
-		c.execute("UPDATE User SET Place_three = ? WHERE UserID LIKE?  AND Tname LIKE?",data)
-	elif times == 4:
-		c.execute("UPDATE User SET Place_four = ? WHERE UserID LIKE?  AND Tname LIKE?",data)
-	elif times == 5:
-		c.execute("UPDATE User SET Place_five = ? WHERE UserID LIKE?  AND Tname LIKE?",data)
+		c.execute("UPDATE User SET Place = ? WHERE UserID LIKE?  AND Tname LIKE?",data)
+		connection.commit()
+	else:
+
+		place = data.pop(0)
+
+		c.execute("SELECT Place FROM User WHERE UserID LIKE? AND Tname LIKE?",data)
+		places = c.fetchone()
+		places = list(places)
+		places = places [0]
+		places = places + '$' + place
+		data.insert(0,places)
+		c.execute("UPDATE User SET Place = ? WHERE UserID LIKE?  AND Tname LIKE?",data)
 
 	connection.commit()
 
@@ -60,7 +63,7 @@ def setPlacedetail(data):
 
 
 
-def getTYPE(data): #input list type
+def getTYPE(data): #input list tsype
 	connection = sqlite3.connect('db/test.db')
 	c = connection.cursor()
 	c.execute("SELECT TYPE_one, TYPE_two, TYPE_three FROM User WHERE UserID LIKE? AND Tname LIKE?",data)
@@ -78,9 +81,12 @@ def getCOUNTY(data):
 def getPLACE(data):
 	connection = sqlite3.connect('db/test.db')
 	c = connection.cursor()
-	c.execute("SELECT Place_one, Place_two, Place_three, Place_four, Place_five FROM User WHERE UserID LIKE? AND Tname LIKE?",data)
+	c.execute("SELECT Place FROM User WHERE UserID LIKE? AND Tname LIKE?",data)
 	place = c.fetchone()
-	return place
+	place = place[0]
+	places = place.split('$')
+	return places
+
 
 def getPlaceDetail(data):
 	connection = sqlite3.connect('db/test.db')
@@ -106,5 +112,3 @@ def Deleterecord(ID):
 	c.execute("DELETE FROM User WHERE UserID LIKE? ",ID)
 	connection.commit()
 
-print(getTnames(['1144120088']))
-#print(getPlaceDetail( ['臺北市兒童新樂園'] ))

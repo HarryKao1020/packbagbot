@@ -92,7 +92,7 @@ def history_output(bot, update): #列出歷史行程的景點
     
 
     
-    landmarks = list(db.getPLACE([UserID,Tname]))
+    landmarks = db.getPLACE([UserID,Tname])
     i = 1
     place_output = ""
     for landmark in landmarks:
@@ -517,7 +517,7 @@ def restart(bot,update):
 
 def done(bot,update):
     UserID = update.message.from_user['id']
-    landmarks = list(db.getPLACE([UserID,travelname[UserID]]))
+    landmarks = db.getPLACE([UserID,travelname[UserID]])
     
     i = 1
     place_output = ""
