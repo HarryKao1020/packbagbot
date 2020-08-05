@@ -104,8 +104,6 @@ def history_output(bot, update): #/history 查詢歷史行程：列出歷史行�
     UserID = query.from_user['id']
     Tname = query.data
     
-
-    
     landmarks = db.getPLACE([UserID,Tname])
     i = 1
     place_output = ""
