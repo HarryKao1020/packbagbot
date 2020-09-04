@@ -2,6 +2,7 @@ import configparser
 import logging
 import random
 import telegram
+from os import path
 from selenium import webdriver
 from flask import Flask, request, render_template
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, InlineKeyboardButton, InlineKeyboardMarkup
@@ -62,7 +63,7 @@ def help_handler(bot, update): #/help 功能介紹
 
 def greet(bot, update): #機器人打招呼 /start
     update.message.reply_text('HI~我是旅泊包🎒 \n 我能依照你的喜好，推薦熱門景點給你')
-    update.message.reply_text('準備要去旅行了嗎 ٩(ˊᗜˋ*)و \n立即輸入 /letsgo 開始使用！\n 如果要參考歷史行程請輸入 /History')
+    update.message.reply_text('準備要去旅行了嗎 ٩(ˊᗜˋ*)و \n立即輸入 /letsgo 開始使用！\n 如果要參考歷史行程請輸入 /history')
 
 def restart(bot,update): #/restart
     UserID = [update.message.from_user['id']]
@@ -481,7 +482,7 @@ def done(bot,update):
 
     update.message.reply_text('旅泊包幫你安排好行程嘍')
     update.message.reply_text(place_output)
-    update.message.reply_text('https://ntubtravelbot.hopto.org/schedule')
+    update.message.reply_text('http://127.0.0.1/username/Tname')
     update.message.reply_text('希望你喜歡旅泊包安排的行程🐾\n祝你玩得愉快！')
 	#================ bot 天氣提示 ================
     home_page = 'https://www.cwb.gov.tw/V8/C/W/County/County.html?CID='

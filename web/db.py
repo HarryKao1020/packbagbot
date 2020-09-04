@@ -2,14 +2,11 @@ import sqlite3
 # from flask import Flask, request
 # from flask import render_template
 
-
-
-
 def setTname(data):
- 	connection = sqlite3.connect('db/test.db')
- 	c = connection.cursor()
- 	c.execute('insert into User(UserID, Tname) values (?,?)', data)
- 	connection.commit()
+	connection = sqlite3.connect('db/test.db')
+	c = connection.cursor()
+	c.execute('insert into User(UserID, Tname) values (?,?)', data)
+	connection.commit()
 
 def setCOUNTY(data):
 	connection = sqlite3.connect('db/test.db')
