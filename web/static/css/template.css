@@ -88,17 +88,16 @@ html, body{
     padding: 0px;
     font-family: MyCustomFont, sans-serif;
     background-image: url('/static/img/back.jpg');
-    background-position: center center;
+    background-position: center center fixed no-repeat;
     background-size: cover;
     text-align: justify;
-    color: blue;
 }
 /*==================navbar==================*/
 div.header{
     margin: 0px;
     width: 100%;
     height: 20%;
-    color: blue;
+    color: rgb(57, 44, 27);
     font-weight: bold;
 }
 nav.title1{
