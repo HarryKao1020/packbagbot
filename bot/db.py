@@ -57,7 +57,15 @@ def setPlace(times,data): #data= [Place, UserID, Tname]
 def setPlacedetail(data):
 	connection = sqlite3.connect('db/test.db')
 	c = connection.cursor()
-	c.execute('insert into Place(PlaceName, Address, Rating, Phone, Time) values (?,?,?,?,?)',data)
+	PlaceName = [ data[0] ]
+	
+	c.execute("SELECT * FROM Place WHERE PlaceName LIKE?" , PlaceName)
+	PlaceDetail = c.fetchone()
+
+
+	if PlaceDetail == None:
+		c.execute('insert into Place(PlaceName, Address, Rating, Phone, Time) values (?,?,?,?,?)',data)
+	
 	connection.commit()
 
 
