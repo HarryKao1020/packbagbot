@@ -12,7 +12,8 @@ home_page = 'https://www.cwb.gov.tw/V8/C/W/County/County.html?CID='
 url = home_page + city_code
 print(url)
 
-#driver_path = r"D:\\chromedriver.exe"   #存放chromeriver.exe的路徑(版本號要相符)
+#driver_path = r"D:\\chromedriver.e
+#存放chromeriver.exe的路徑(版本號要相符)
 driver = webdriver.Chrome()
 driver.get(url) #啟動Chrome
 
