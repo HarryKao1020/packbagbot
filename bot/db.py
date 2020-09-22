@@ -112,3 +112,7 @@ def Deleterecord(ID):
 	c.execute("DELETE FROM User WHERE UserID LIKE? ",ID)
 	connection.commit()
 
+data = ['永康商圈']
+detail = getPlaceDetail(data)
+for a in detail:
+	print(a)
