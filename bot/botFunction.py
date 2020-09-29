@@ -1,7 +1,7 @@
 #telegram基礎機能
 import telegram
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Updater, Filters, ConversationHandler, Dispatcher, CallbackQueryHandler , CommandHandler, MessageHandler
+from telegram.ext import Updater,  Filters, ConversationHandler, Dispatcher, CallbackQueryHandler , CommandHandler, MessageHandler
 
 #其餘套件
 from os import path
@@ -11,55 +11,18 @@ import logging
 import random
 
 import db
-# import botFunction
-# from botFunction import *
+import app
+from app import logger
+from app import NAMING, DIRECTION, COUNTY, TYPE_ONE, TYPE_TWO, TYPE_THREE, TRAFFIC, SEARCH_PLACE, PLACE, PLACE_TWO,HISTORY
+from app import travelname, cntplace, tmpplace, placebuttontmp, tmpplacedetail, tmpregion, tmptypes, tmpcounty
+from app import city_code_list, weatherDeatil, weatherAll
+from app import webUserID, webtravelname, webRandom, webUrl, detailUrl
 from place.PAPI import getNear, getPlace, getSearch
+
+# __all__  = ['help_handler', 'greet', 'restart', 'warnnn', 'error', 'history', 'history_output', 'naming']
 
 # from flask import Flask, request, render_template
 
-#===============================================
-#===============================================
-#===============================================
-
-#Load data from config.ini file
-config = configparser.ConfigParser()
-config.read('config.ini')
-
-# Enable logging
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-# Initial bot by Telegram access token
-bot = telegram.Bot(token=(config['TELEGRAM']['ACCESS_TOKEN']))
-
-#===============================================
-#===================天氣用參數===================
-#===============================================
-city_code_list={  #各縣市ID
-    "基隆":"10017", "台北":"63", "新北":"65", "桃園":"68", "新竹":"10018", "苗栗":"10005", "台中":"66", "南投":"10008", "彰化":"10007", "雲林":"10009", "嘉義":"10020", "台南":"67", "高雄":"64", "屏東":"10013", "台東":"10014", "花蓮":"10015", "宜蘭":"10002",
-}
-weatherDeatil = ''
-weatherAll = ''
-
-NAMING, DIRECTION, COUNTY, TYPE_ONE, TYPE_TWO, TYPE_THREE, TRAFFIC, SEARCH_PLACE, PLACE, PLACE_TWO,HISTORY = range(11)
-travelname = {} #紀錄使用者當前行程名稱
-cntplace = {} #紀錄使用者安排景點數量
-tmpplace = {} #暫存使用者選擇景點
-placebuttontmp = {} #暫存使用者按鈕資料
-tmpplacedetail = {} #紀錄地點詳細資訊
-tmpregion = {} #紀錄地區
-tmptypes= {} #紀錄類型次數
-tmpcounty= {} #紀錄縣市
-
-#===============================================
-#===================網頁用參數===================
-#===============================================
-webUserID = ''     #webUserID = UserID
-webtravelname = '' #webtravelname = 自行命名的行程名
-webRandom = ''     #webRandom = 避免行程名重複
-webUrl = ''        #webUrl = 產生的網址 (UserID+自行命名的景點+亂數)
-detailUrl = ''     #detailUrl = 用來產生詳細景點資訊URL
 #===============================================
 #===================機器人指令===================
 #===============================================
@@ -83,7 +46,7 @@ def warnnn(bot,update):
 
 def error(update, context):
     """Log Errors caused by Updates."""
-    logger.warning('Update "%s" caused error "%s"', update, context.error)
+    app.logger.warning('Update "%s" caused error "%s"', update, context.error)
 
 #######    history_conv            #######
 def history(bot, update):#查詢行程
@@ -127,7 +90,7 @@ def history_output(bot, update): #/history 查詢歷史行程：列出歷史行�
 #===================機器人機能===================
 #===============================================
 def naming(bot, update):  #行程名稱取名
-    logger.info("username: %s start", update.message.from_user)
+    app.logger.info("username: %s start", update.message.from_user)
     update.message.reply_text('請先替這次行程取個名字')
     return NAMING
 
@@ -136,7 +99,7 @@ def start(bot, update): #選擇區域
     if update.message.text != '/return':
         travelname.update( { UserID : update.message.text} )
     
-    logger.info("username: %s start",update.message.from_user)
+    app.logger.info("username: %s start",update.message.from_user)
     keyboard = [
         [InlineKeyboardButton("北部", callback_data='North'),
         InlineKeyboardButton("中部", callback_data='Central')],
@@ -196,7 +159,7 @@ def selcounty(bot, update): #選擇縣市
 def button(bot, update):  #確定選擇縣市
     UserID = update.callback_query.from_user['id']
     query = update.callback_query
-    logger.info("username: %s chooses %s",update.callback_query.from_user['id'],query.data)
+    app.logger.info("username: %s chooses %s",update.callback_query.from_user['id'],query.data)
     tmpcounty.update( {UserID:query.data} )
     
     reply_text=["我也喜歡"+query.data+"🙆",
@@ -227,7 +190,7 @@ def type_two(bot, update):
     reply_keyboard=[['特色商圈','古蹟廟宇'],['人文藝術','景觀風景'],['休閒農業','戶外休閒'],['主題樂園','無礙障旅遊'],['/done']]
     update.message.reply_text(f'你選擇的是「{Text}」，\n還有其他有興趣的類型嗎？\n如果沒有，請幫我選擇「/done」',reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
     if update.message.text != "/done":
-        logger.info("%s is choose %s", update.message.from_user, update.message.text)
+        app.logger.info("%s is choose %s", update.message.from_user, update.message.text)
 
     return TYPE_TWO
 
@@ -240,7 +203,7 @@ def type_three(bot, update):
     reply_keyboard=[['特色商圈','古蹟廟宇'],['人文藝術','景觀風景'],['休閒農業','戶外休閒'],['主題樂園','無礙障旅遊'],['/done']]
     update.message.reply_text(f'你選擇的是「{Text}」，\n還有其他有興趣的類型嗎？\n如果沒有，請幫我選擇「/done」',reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
     if update.message.text != "/done":
-        logger.info("%s is choose %s", update.message.from_user, update.message.text)
+        app.logger.info("%s is choose %s", update.message.from_user, update.message.text)
 
     return TYPE_THREE
 
@@ -254,7 +217,7 @@ def traffic(bot, update):
         Text = Text.replace(" ","")
         db.setTYPE_three([Text,UserID,travelname[UserID]])
 
-    logger.info("type is %s form %s",update.message.text,update.message.from_user)
+    app.logger.info("type is %s form %s",update.message.text,update.message.from_user)
     reply_keyboard=[['大眾運輸🚌','其他🚂']]
     update.message.reply_text('想如何前往呢？',reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
     return TRAFFIC
@@ -268,7 +231,7 @@ def traffic2(bot, update):
         Text = Text.replace(" ","")
         db.setTYPE_three([Text,UserID,travelname[UserID]])
 
-    logger.info("type is %s form %s",update.message.text,update.message.from_user)
+    app.logger.info("type is %s form %s",update.message.text,update.message.from_user)
     reply_keyboard=[['客運🚌','火車🚂','高鐵🚅']]
     update.message.reply_text('想如何前往呢？',reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
     return TRAFFIC
@@ -372,7 +335,7 @@ def placeforcar(bot, update):
 #================ 選擇景點(第二個~結束) ================
 def place_choose(bot, update):
     UserID = update.message.from_user['id']
-    logger.info("%s prees 自行前往", UserID)
+    app.logger.info("%s prees 自行前往", UserID)
 
     types = db.getTYPE([UserID,travelname[UserID]])
     county = db.getCOUNTY([UserID,travelname[UserID]])
@@ -401,7 +364,7 @@ def place_choose(bot, update):
 
 def place_fork(bot,update):
     UserID = update.message.from_user['id']
-    logger.info("%s prees 自行前往", UserID)
+    app.logger.info("%s prees 自行前往", UserID)
 
     update.message.reply_text('想要自己選擇景點請輸入景點名稱\n如果希望由旅泊包安排請點選👇\n/go')
     
@@ -536,80 +499,8 @@ def getUserwebURL(UserID, travelname):
     Url =  "/" + ramdomUserID + "/" + webtravelname + webRandom
 
     return Url
-#================ bot 主程式 ================
-conv_handler = ConversationHandler(
-        entry_points=[CommandHandler('letsgo', naming)],
 
-        states={
-            NAMING:[MessageHandler(Filters.text, start),]
-            ,
-            DIRECTION: [
-                        CallbackQueryHandler(selcounty),
-                        ],
-            COUNTY: [ 
-                # CallbackQueryHandler(botFunction.start, pattern='^' + str(estartstart) + '$'),
-                CallbackQueryHandler(start, pattern='^' + str(restart) + '$'),
-                        CallbackQueryHandler(button),
-                        MessageHandler(Filters.regex('^(/chooseOK)$'), type_one),
-                        MessageHandler(Filters.regex('^(/return)$'), start),
-                        MessageHandler(Filters.regex('^(Ok)$'), type_one),
-                        MessageHandler(Filters.regex('^(OK)$'), type_one)],
-            TYPE_ONE: [
-                        MessageHandler(Filters.text, type_two),],
-            TYPE_TWO:[
-                        CommandHandler('done', traffic),
-                        MessageHandler(Filters.text, type_three),],
-            TYPE_THREE:[
-                        CommandHandler('done', traffic),
-                        MessageHandler(Filters.text, traffic),],
-            TRAFFIC:[
-                    MessageHandler(Filters.regex('^(大眾運輸🚌)$'), traffic2),
-                    MessageHandler(Filters.regex('^(客運🚌)$'), place_fork),
-                    MessageHandler(Filters.regex('^(火車🚂)$'), place_fork),
-                    MessageHandler(Filters.regex('^(高鐵🚅)$'), place_fork),
-                    MessageHandler(Filters.regex('^(其他🚂)$'), place_fork),
-            ],
-            SEARCH_PLACE:[CommandHandler('restart', restart),
-                CommandHandler('go', place_choose),
-                CommandHandler('done', place_choose),
-                MessageHandler(Filters.text, search_placedetail),
-                CallbackQueryHandler(search_confirmbutton, pattern='^' + str(search_confirmbutton) + '$'),
-                
-            ],
-            PLACE:[CommandHandler('restart', restart),
-                CallbackQueryHandler(returnplace, pattern='^(上一頁)$'),
-                CallbackQueryHandler(confirmbutton, pattern='^' + str(confirmbutton) + '$'),
-                CallbackQueryHandler(placedetail),
-                CommandHandler('next', place_choose),
-                CommandHandler('done', done),
-                MessageHandler(Filters.regex('^(下一個)$'), place_choose),
-                MessageHandler(Filters.regex('^(完成)$'), done)],
-        },
-        fallbacks=[CommandHandler('restart', restart),MessageHandler(Filters.regex('^Done$'), done)]
-    )
-
-history_handler = ConversationHandler(
-    entry_points = [CommandHandler('History', history)],
-    states = {
-        HISTORY:[CallbackQueryHandler(history_output),]
-    },
-    fallbacks=[]
-)
-
-# New a dispatcher for bot
-dispatcher = Dispatcher(bot, None)
-
-# Add handler for handling message, there are many kinds of message. For this handler, it particular handle text
-# message.
-dispatcher.add_handler(conv_handler)
-dispatcher.add_handler(history_handler)
-dispatcher.add_handler(CommandHandler('help', help_handler))
-dispatcher.add_handler(CommandHandler('start', greet))
-dispatcher.add_handler(CommandHandler('restart', restart))
-dispatcher.add_handler(MessageHandler(Filters.text, warnnn))
-#================================================
-updater = Updater(token=(config['TELEGRAM']['ACCESS_TOKEN']))
-updater.start_polling() #讓程式持續運行
-updater.idle()
-
-
+# def callFlask():
+#     # Running server
+#     if __name__ == "__main__":
+#         app.run(debug=True)
