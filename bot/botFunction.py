@@ -12,11 +12,12 @@ import random
 
 import db
 import app
-from app import logger
-from app import NAMING, DIRECTION, COUNTY, TYPE_ONE, TYPE_TWO, TYPE_THREE, TRAFFIC, SEARCH_PLACE, PLACE, PLACE_TWO,HISTORY
-from app import travelname, cntplace, tmpplace, placebuttontmp, tmpplacedetail, tmpregion, tmptypes, tmpcounty
-from app import city_code_list, weatherDeatil, weatherAll
-from app import webUserID, webtravelname, webRandom, webUrl, detailUrl
+from app import *
+# from app import logger
+# from app import NAMING, DIRECTION, COUNTY, TYPE_ONE, TYPE_TWO, TYPE_THREE, TRAFFIC, SEARCH_PLACE, PLACE, PLACE_TWO,HISTORY
+# from app import travelname, cntplace, tmpplace, placebuttontmp, tmpplacedetail, tmpregion, tmptypes, tmpcounty
+# from app import city_code_list, weatherDeatil, weatherAll
+# from app import webUserID, webtravelname, webRandom, webUrl, detailUrl
 from place.PAPI import getNear, getPlace, getSearch
 
 # __all__  = ['help_handler', 'greet', 'restart', 'warnnn', 'error', 'history', 'history_output', 'naming']

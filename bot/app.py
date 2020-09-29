@@ -1,26 +1,21 @@
-#telegram基礎機能
+#引入機器人基礎機能
 import telegram
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Updater, Filters, ConversationHandler, Dispatcher, CallbackQueryHandler , CommandHandler, MessageHandler
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, ConversationHandler, Dispatcher, CallbackQueryHandler
 
-#其餘套件
-from os import path
-from selenium import webdriver
 import configparser
 import logging
 import random
+from os import path
+from selenium import webdriver
+from flask import Flask, request, render_template
 
 import db
-# import botFunction
-# from botFunction import *
 from place.PAPI import getNear, getPlace, getSearch
 
-# from flask import Flask, request, render_template
-
-#===============================================
-#===============================================
-#===============================================
-
+#=====================================================
+#=======================Setting=======================
+#=====================================================
 #Load data from config.ini file
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -30,8 +25,21 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Initial Flask app
+application = Flask(__name__)
+
 # Initial bot by Telegram access token
 bot = telegram.Bot(token=(config['TELEGRAM']['ACCESS_TOKEN']))
+
+NAMING, DIRECTION, COUNTY, TYPE_ONE, TYPE_TWO, TYPE_THREE, TRAFFIC, SEARCH_PLACE, PLACE, PLACE_TWO,HISTORY = range(11)
+travelname     = {}  #紀錄使用者當前行程名稱
+cntplace       = {}  #紀錄使用者安排景點數量
+tmpplace       = {}  #暫存使用者選擇景點
+placebuttontmp = {}  #暫存使用者按鈕資料
+tmpplacedetail = {}  #紀錄地點詳細資訊
+tmpregion      = {}  #紀錄地區
+tmptypes       = {}  #紀錄類型次數
+tmpcounty      = {}  #紀錄縣市
 
 #===============================================
 #===================天氣用參數===================
@@ -39,18 +47,6 @@ bot = telegram.Bot(token=(config['TELEGRAM']['ACCESS_TOKEN']))
 city_code_list={  #各縣市ID
     "基隆":"10017", "台北":"63", "新北":"65", "桃園":"68", "新竹":"10018", "苗栗":"10005", "台中":"66", "南投":"10008", "彰化":"10007", "雲林":"10009", "嘉義":"10020", "台南":"67", "高雄":"64", "屏東":"10013", "台東":"10014", "花蓮":"10015", "宜蘭":"10002",
 }
-weatherDeatil = ''
-weatherAll = ''
-
-NAMING, DIRECTION, COUNTY, TYPE_ONE, TYPE_TWO, TYPE_THREE, TRAFFIC, SEARCH_PLACE, PLACE, PLACE_TWO,HISTORY = range(11)
-travelname = {} #紀錄使用者當前行程名稱
-cntplace = {} #紀錄使用者安排景點數量
-tmpplace = {} #暫存使用者選擇景點
-placebuttontmp = {} #暫存使用者按鈕資料
-tmpplacedetail = {} #紀錄地點詳細資訊
-tmpregion = {} #紀錄地區
-tmptypes= {} #紀錄類型次數
-tmpcounty= {} #紀錄縣市
 
 #===============================================
 #===================網頁用參數===================
@@ -60,17 +56,32 @@ webtravelname = '' #webtravelname = 自行命名的行程名
 webRandom = ''     #webRandom = 避免行程名重複
 webUrl = ''        #webUrl = 產生的網址 (UserID+自行命名的景點+亂數)
 detailUrl = ''     #detailUrl = 用來產生詳細景點資訊URL
+
+#=================== web app ===================
+@application.route('/')
+def index():
+    return "<h1>Hello World!</h1>"
+
+@application.route('/hook', methods=['POST'])
+def webhook_handler():
+    """Set route /hook with POST method will trigger this method."""
+    if request.method == "POST":
+        update = telegram.Update.de_json(request.get_json(force=True), bot)
+        dispatcher.process_update(update)
+    return 'ok'
+
+
 #===============================================
 #===================機器人指令===================
 #===============================================
 def help_handler(bot, update): #/help 功能介紹
     update.message.reply_text('指令教學 \n/letsgo 立刻開始使用 \n/history 查詢歷史行程 \n/restart 遇到問題時刷新機器人')
 
-def greet(bot, update): #/start 機器人打招呼 
+def greet(bot, update):        #/start 機器人打招呼 
     update.message.reply_text('HI~我是旅泊包🎒 \n 我能依照你的喜好，推薦熱門景點給你')
     update.message.reply_text('準備要去旅行了嗎 ٩(ˊᗜˋ*)و \n立即輸入 /letsgo 開始使用！\n 如果要參考歷史行程請輸入 /history')
 
-def restart(bot,update): #/restart
+def restart(bot,update):       #/restart
     UserID = [update.message.from_user['id']]
     update.message.reply_text('完成')
     db.Deleterecord(UserID)
@@ -85,8 +96,9 @@ def error(update, context):
     """Log Errors caused by Updates."""
     logger.warning('Update "%s" caused error "%s"', update, context.error)
 
-#######    history_conv            #######
-def history(bot, update):#查詢行程
+#===============================================
+#=================history_conv==================
+def history(bot, update):        #/history 查詢歷史行程
     UserID = update.message.from_user['id']
 
     Tnames = db.getTnames([UserID]) #出來是 tunlp ex:[('name1',),('name2',)]
@@ -123,11 +135,12 @@ def history_output(bot, update): #/history 查詢歷史行程：列出歷史行�
     query.edit_message_text(place_output)
     return ConversationHandler.END
 
-#===============================================
-#===================機器人機能===================
-#===============================================
+#===================================================================
+#===========================機器人核心機能===========================
+#===================================================================
+
 def naming(bot, update):  #行程名稱取名
-    logger.info("username: %s start", update.message.from_user)
+    logger.info("username: %s start",update.message.from_user)
     update.message.reply_text('請先替這次行程取個名字')
     return NAMING
 
@@ -491,20 +504,18 @@ def done(bot,update):
     # callFlask()
     update.message.reply_text('旅泊包幫你安排好行程嘍')
     update.message.reply_text(place_output)
-    update.message.reply_text('http://127.0.0.1:5000' + webUrl)
+    update.message.reply_text('http://127.0.0.1:80' + webUrl)
     update.message.reply_text('希望你喜歡旅泊包安排的行程🐾\n祝你玩得愉快！')
-    print('http://127.0.0.1:5000' + webUrl )
+    print('http://127.0.0.1:80' + webUrl )
 
-    getWeather(tmpcounty[UserID])
-    update.message.reply_text(weatherAll)
-    update.message.reply_text(tmpcounty[UserID] + '的天氣狀況：' + weatherDeatil)
+    getWeather(tmpcounty[UserID], update)
     
     return ConversationHandler.END
 
 #===============================================
-#====================天氣提示====================
+#===================天氣用方法===================
 #===============================================
-def getWeather(address):
+def getWeather(address, update):
     home_page = 'https://www.cwb.gov.tw/V8/C/W/County/County.html?CID='
     city_code = city_code_list[address] #與city_code_list的縣市資料對比數字
     url = home_page + city_code
@@ -513,6 +524,9 @@ def getWeather(address):
     weatherAll = driver.find_element_by_xpath('/html/body/div/div/div/ul').text
     weatherDeatil = driver.find_element_by_xpath('/html/body/div/div/div/div/a').text
     driver.close() #關閉Chrome
+
+    update.message.reply_text(weatherAll)
+    update.message.reply_text(address + '的天氣狀況：' + weatherDeatil)
 
     return
 
@@ -536,19 +550,22 @@ def getUserwebURL(UserID, travelname):
     Url =  "/" + ramdomUserID + "/" + webtravelname + webRandom
 
     return Url
-#================ bot 主程式 ================
+
+def callFlask():
+    import webfunction
+
+#=======================================================================
+#==============================機器人主程式==============================
+#=======================================================================
 conv_handler = ConversationHandler(
         entry_points=[CommandHandler('letsgo', naming)],
 
         states={
-            NAMING:[MessageHandler(Filters.text, start),]
-            ,
+            NAMING:[MessageHandler(Filters.text, start),],
             DIRECTION: [
                         CallbackQueryHandler(selcounty),
                         ],
-            COUNTY: [ 
-                # CallbackQueryHandler(botFunction.start, pattern='^' + str(estartstart) + '$'),
-                CallbackQueryHandler(start, pattern='^' + str(restart) + '$'),
+            COUNTY: [ CallbackQueryHandler(start, pattern='^' + str(start) + '$'),
                         CallbackQueryHandler(button),
                         MessageHandler(Filters.regex('^(/chooseOK)$'), type_one),
                         MessageHandler(Filters.regex('^(/return)$'), start),
@@ -570,7 +587,7 @@ conv_handler = ConversationHandler(
                     MessageHandler(Filters.regex('^(其他🚂)$'), place_fork),
             ],
             SEARCH_PLACE:[CommandHandler('restart', restart),
-                CommandHandler('go', place_choose),
+                CommandHandler('go',place_choose),
                 CommandHandler('done', place_choose),
                 MessageHandler(Filters.text, search_placedetail),
                 CallbackQueryHandler(search_confirmbutton, pattern='^' + str(search_confirmbutton) + '$'),
@@ -596,6 +613,10 @@ history_handler = ConversationHandler(
     fallbacks=[]
 )
 
+#=================================================
+#====================基礎機能設定==================
+#=================================================
+
 # New a dispatcher for bot
 dispatcher = Dispatcher(bot, None)
 
@@ -607,9 +628,7 @@ dispatcher.add_handler(CommandHandler('help', help_handler))
 dispatcher.add_handler(CommandHandler('start', greet))
 dispatcher.add_handler(CommandHandler('restart', restart))
 dispatcher.add_handler(MessageHandler(Filters.text, warnnn))
-#================================================
-updater = Updater(token=(config['TELEGRAM']['ACCESS_TOKEN']))
-updater.start_polling() #讓程式持續運行
-updater.idle()
 
-
+# Running server
+if __name__ == "__main__":
+    application.run(debug=True)
