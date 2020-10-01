@@ -5,11 +5,34 @@ gmaps = googlemaps.Client(key='AIzaSyABrj1Q38oMpuQ6z7IwkorLnnuYHxzFq_0')
 
 def getNear(county,types):
     if types == "特色商圈":
-        types = "商圈"
+        sub_types=["夜市","老街","形象商圈","百貨"]
+        i= random.randint(0,3)
+        types = subtypes(i)
     elif types == "古蹟廟宇":
-        types = "古蹟"
+        i= random.randint(0,3)
+        sub_types=["寺廟","教堂","古蹟","軍事基地"]
+        types = subtypes(i)
     elif types == "人文藝術":
-        types = "博物館"
+        i= random.randint(0,3)
+        sub_types=["文創園區","博物館","美術館","電影院"]
+        types = subtypes(i)
+    elif types == "休閒農業":
+        i= random.randint(0,4)
+        sub_types=["觀光工廠","農場","林場","漁場","牧場"]
+        types = subtypes(i)
+    elif types == "主題樂園":
+        i= random.randint(0,1)
+        sub_types=["遊樂園","水族館"]
+        types = subtypes(i)
+    elif types == "景觀風景":
+        i= random.randint(0,5)
+        sub_types=["公園綠地","海邊","展望台","自然保護區","風景區","觀景台"]
+        types = sub_types(i)
+    elif types == "戶外休閒":
+        i= random.randint(0,3)
+        sub_types=["露營區","自行車道","登山步道","溫泉"]
+        types = sub_types(i)
+    
     #關鍵字搜尋
     geocode_result = gmaps.geocode(county+' '+types)
     loc = geocode_result[0]['geometry']['location']
