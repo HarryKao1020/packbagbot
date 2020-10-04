@@ -1,100 +1,110 @@
 import googlemaps
 import json
-
-gmaps = googlemaps.Client(key='AIzaSyABrj1Q38oMpuQ6z7IwkorLnnuYHxzFq_0')
+import random
+gmaps = googlemaps.Client(key='AIzaSyAZZSdiWrwGceupgus3xLLNjcg6Vdi5TkQ')
 
 def getNear(county,types):
-    if types == "特色商圈":
-        sub_types=["夜市","老街","形象商圈","百貨"]
-        i= random.randint(0,3)
-        types = subtypes(i)
-    elif types == "古蹟廟宇":
-        i= random.randint(0,3)
-        sub_types=["寺廟","教堂","古蹟","軍事基地"]
-        types = subtypes(i)
-    elif types == "人文藝術":
-        i= random.randint(0,3)
-        sub_types=["文創園區","博物館","美術館","電影院"]
-        types = subtypes(i)
-    elif types == "休閒農業":
-        i= random.randint(0,4)
-        sub_types=["觀光工廠","農場","林場","漁場","牧場"]
-        types = subtypes(i)
-    elif types == "主題樂園":
-        i= random.randint(0,1)
-        sub_types=["遊樂園","水族館"]
-        types = subtypes(i)
-    elif types == "景觀風景":
-        i= random.randint(0,5)
-        sub_types=["公園綠地","海邊","展望台","自然保護區","風景區","觀景台"]
-        types = sub_types(i)
-    elif types == "戶外休閒":
-        i= random.randint(0,3)
-        sub_types=["露營區","自行車道","登山步道","溫泉"]
-        types = sub_types(i)
-    
-    #關鍵字搜尋
-    geocode_result = gmaps.geocode(county+' '+types)
-    loc = geocode_result[0]['geometry']['location']
-    c = county+ ' '+types
-    #創建序列存放
-    ids = []
+    pre_rand=99
+    rand = 0
+    aName=[]
+    while(len(aName)<5):
+        if types == "特色商圈":
+            if rand == pre_rand:
+                rand=random.randint(0,3)
+            sub_types=["夜市","老街", "形象商圈", "百貨"]        
+            
+        elif types == "古蹟廟宇":
+            if rand == pre_rand:
+                rand=random.randint(0,3)
+            sub_types=["寺廟","教堂","古蹟","軍事基地"]
+            
+        elif types == "人文藝術":
+            if rand == pre_rand:    
+                rand=random.randint(0,3)
+            sub_types=["文創園區","博物館","美術館","電影院"]
+            
+        elif types == "休閒農業":
+            if rand == pre_rand:
+                rand=random.randint(0,4)
+            sub_types=["觀光工廠","農場","林場","漁場","牧場"]
+            
+        elif types == "主題樂園":
+            if rand == pre_rand:
+                rand= random.randint(0,1)
+            sub_types=["遊樂園","水族館"]
+            
+        elif types == "景觀風景":
+            if rand == pre_rand:
+                rand= random.randint(0,5)
+            sub_types=["公園綠地","海邊","展望台","自然保護區","風景區","觀景台"]
+            
+        elif types == "戶外休閒":
+            if rand == pre_rand:
+                rand= random.randint(0,3)
+            sub_types=["露營區","自行車道","登山步道","溫泉"]
+        print(sub_types[rand])
+        
+        #關鍵字搜尋
+        geocode_result = gmaps.geocode(county+' '+sub_types[rand])
+        loc = geocode_result[0]['geometry']['location']
+        c = county+ ' '+sub_types[rand]
+        #創建序列存放
+        ids = []
 
-    #將半徑500公尺內的咖啡廳存放至ids序列
-    for place in gmaps.places_nearby(keyword=c,location=loc, radius = 500)['results']:
-        ids.append(place['place_id'])
+        #將半徑500公尺內的咖啡廳存放至ids序列
+        for place in gmaps.places_nearby(keyword=c,location=loc, radius = 500)['results']:
+            ids.append(place['place_id'])
 
-    #用set存放資料消除重複元素
-    stores_info = []
-    ids = list(set(ids))
+        #用set存放資料消除重複元素
+        stores_info = []
+        ids = list(set(ids))
 
-    #存放半徑500公尺內咖啡廳的名稱、位置、總評分數量、評分
-    for id in ids:
-        stores_info.append(gmaps.place(place_id=id,fields=['name', 'place_id', 'formatted_phone_number', 'formatted_address', 'geometry/location', 'opening_hours', 'user_ratings_total', 'rating'], language='zh-TW')['result'])
-    
-    #除去評論數太少以致沒有評分的店家
-    delete = []
-    for i in stores_info:
-        if 'rating' not in i:
-            delete.append(i)
-    for j in delete:
-        stores_info.remove(j)
-    
-    #依照評分數值由高至低進行排序，若評分相同則比較總評分數量
+        #存放半徑500公尺內咖啡廳的名稱、位置、總評分數量、評分
+        for id in ids:
+            stores_info.append(gmaps.place(place_id=id,fields=['name', 'place_id', 'formatted_phone_number', 'formatted_address', 'geometry/location', 'opening_hours', 'user_ratings_total', 'rating'], language='zh-TW')['result'])
+        
+        #除去評論數太少以致沒有評分的店家
+        delete = []
+        for i in stores_info:
+            if 'rating' not in i:
+                delete.append(i)
+        for j in delete:
+            stores_info.remove(j)
+        
+        #依照評分數值由高至低進行排序，若評分相同則比較總評分數量
 
-    stores_info = sorted(stores_info,key=lambda x: (x['rating'],x['user_ratings_total']),reverse=True)
+        stores_info = sorted(stores_info,key=lambda x: (x['rating'],x['user_ratings_total']),reverse=True)
 
-    #抓出每個地址的相關資料(沒用到就不用看)
-    lat = []
-    lng = []
-    name = []
-    rating = []
-    urt = []
+        #抓出每個地址的相關資料(沒用到就不用看)
+        lat = []
+        lng = []
+        name = []
+        rating = []
+        urt = []
 
-    for i in stores_info:
-        lat.append(dict(dict(dict(i)['geometry'])['location'])['lat'])
-        lng.append(dict(dict(dict(i)['geometry'])['location'])['lng'])
-        name.append(dict(i)['name'])
-        rating.append(dict(i)['rating'])
-        urt.append(dict(i)['user_ratings_total'])
+        for i in stores_info:
+            lat.append(dict(dict(dict(i)['geometry'])['location'])['lat'])
+            lng.append(dict(dict(dict(i)['geometry'])['location'])['lng'])
+            name.append(dict(i)['name'])
+            rating.append(dict(i)['rating'])
+            urt.append(dict(i)['user_ratings_total'])
 
-    #輸出json檔
-    #with open('APIP.json', 'w', encoding='utf-8') as f:
-        #json.dump(stores_info, f)
-    
-    a=[]
+        #輸出json檔
+        #with open('APIP.json', 'w', encoding='utf-8') as f:
+            #json.dump(stores_info, f)
+        
+        a=[]
 
-    for i in range(0,5):
-        if len(stores_info) <= i:
-            break
-        else:
-            a.append(stores_info[i])
-    aName = []
-    for i in a:
-        b = {'name':i['name'],'placeid':i['place_id']}
-        aName.append(b)
-
-    
+        for i in range(0,5):
+            if len(stores_info) <= i:
+                break
+            else:
+                a.append(stores_info[i])
+        aName=[]
+        for i in a:
+            b = {'name':i['name'],'placeid':i['place_id']}
+            aName.append(b)
+        pre_rand=rand
     return aName
 
 
