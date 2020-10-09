@@ -7,7 +7,12 @@ def getNear(county,types):
     pre_rand=99
     rand = 0
     aName=[]
+    cnt = 0
     while(len(aName)<5):
+        cnt += 1
+        if cnt == 11:
+            break
+        print(aName)
         if types == "特色商圈":
             if rand == pre_rand:
                 rand=random.randint(0,3)
@@ -43,7 +48,6 @@ def getNear(county,types):
                 rand= random.randint(0,3)
             sub_types=["露營區","自行車道","登山步道","溫泉"]
         print(sub_types[rand])
-        
         #關鍵字搜尋
         geocode_result = gmaps.geocode(county+' '+sub_types[rand])
         loc = geocode_result[0]['geometry']['location']
@@ -52,9 +56,14 @@ def getNear(county,types):
         ids = []
 
         #將半徑500公尺內的咖啡廳存放至ids序列
-        for place in gmaps.places_nearby(keyword=c,location=loc, radius = 500)['results']:
-            ids.append(place['place_id'])
-
+        radius = 500
+        while (len(aName)==0):
+            for place in gmaps.places_nearby(keyword=c,location=loc, radius = radius)['results']:
+                ids.append(place['place_id'])
+            radius += 500
+            if radius > 5000:
+                break
+        
         #用set存放資料消除重複元素
         stores_info = []
         ids = list(set(ids))
@@ -100,7 +109,6 @@ def getNear(county,types):
                 break
             else:
                 a.append(stores_info[i])
-        aName=[]
         for i in a:
             b = {'name':i['name'],'placeid':i['place_id']}
             aName.append(b)
