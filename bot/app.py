@@ -1,15 +1,21 @@
+#引入機器人基礎機能
+import telegram
+from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, ConversationHandler, Dispatcher, CallbackQueryHandler
+
 import configparser
 import logging
 import random
-import telegram
 from os import path
 from selenium import webdriver
 from flask import Flask, request, render_template
-from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, ConversationHandler, Dispatcher, CallbackQueryHandler
+
 import db
 from place.PAPI import getNear, getPlace, getSearch
 
+#=====================================================
+#=======================Setting=======================
+#=====================================================
 #Load data from config.ini file
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -25,22 +31,33 @@ application = Flask(__name__)
 # Initial bot by Telegram access token
 bot = telegram.Bot(token=(config['TELEGRAM']['ACCESS_TOKEN']))
 
-#各縣市ID
-city_code_list={ 
+NAMING, DIRECTION, COUNTY, TYPE_ONE, TYPE_TWO, TYPE_THREE, TRAFFIC, SEARCH_PLACE, PLACE, PLACE_TWO,HISTORY = range(11)
+travelname     = {}  #紀錄使用者當前行程名稱
+cntplace       = {}  #紀錄使用者安排景點數量
+tmpplace       = {}  #暫存使用者選擇景點
+placebuttontmp = {}  #暫存使用者按鈕資料
+tmpplacedetail = {}  #紀錄地點詳細資訊
+tmpregion      = {}  #紀錄地區
+tmptypes       = {}  #紀錄類型次數
+tmpcounty      = {}  #紀錄縣市
+
+#===============================================
+#===================天氣用參數===================
+#===============================================
+city_code_list={  #各縣市ID
     "基隆":"10017", "台北":"63", "新北":"65", "桃園":"68", "新竹":"10018", "苗栗":"10005", "台中":"66", "南投":"10008", "彰化":"10007", "雲林":"10009", "嘉義":"10020", "台南":"67", "高雄":"64", "屏東":"10013", "台東":"10014", "花蓮":"10015", "宜蘭":"10002",
 }
 
-NAMING, DIRECTION, COUNTY, TYPE_ONE, TYPE_TWO, TYPE_THREE, TRAFFIC, SEARCH_PLACE, PLACE, PLACE_TWO,HISTORY = range(11)
-travelname = {} #紀錄使用者當前行程名稱
-cntplace = {} #紀錄使用者安排景點數量
-tmpplace = {} #暫存使用者選擇景點
-placebuttontmp = {} #暫存使用者按鈕資料
-tmpplacedetail = {} #紀錄地點詳細資訊
-tmpregion = {} #紀錄地區
-tmptypes= {} #紀錄類型次數
-tmpcounty= {} #紀錄縣市
+#===============================================
+#===================網頁用參數===================
+#===============================================
+webUserID = ''     #webUserID = UserID
+webtravelname = '' #webtravelname = 自行命名的行程名
+webRandom = ''     #webRandom = 避免行程名重複
+webUrl = ''        #webUrl = 產生的網址 (UserID+自行命名的景點+亂數)
+detailUrl = ''     #detailUrl = 用來產生詳細景點資訊URL
 
-#================ web app ================
+#=================== web app ===================
 @application.route('/')
 def index():
     return "<h1>Hello World!</h1>"
@@ -53,19 +70,18 @@ def webhook_handler():
         dispatcher.process_update(update)
     return 'ok'
 
-@application.route('/schedule')
-def sched():
-    return render_template('index.html')
 
-#================ bot 指令 ================
+#===============================================
+#===================機器人指令===================
+#===============================================
 def help_handler(bot, update): #/help 功能介紹
     update.message.reply_text('指令教學 \n/letsgo 立刻開始使用 \n/history 查詢歷史行程 \n/restart 遇到問題時刷新機器人')
 
-def greet(bot, update): #機器人打招呼 /start
+def greet(bot, update):        #/start 機器人打招呼 
     update.message.reply_text('HI~我是旅泊包🎒 \n 我能依照你的喜好，推薦熱門景點給你')
     update.message.reply_text('準備要去旅行了嗎 ٩(ˊᗜˋ*)و \n立即輸入 /letsgo 開始使用！\n 如果要參考歷史行程請輸入 /history')
 
-def restart(bot,update): #/restart
+def restart(bot,update):       #/restart
     UserID = [update.message.from_user['id']]
     update.message.reply_text('完成')
     db.Deleterecord(UserID)
@@ -80,8 +96,9 @@ def error(update, context):
     """Log Errors caused by Updates."""
     logger.warning('Update "%s" caused error "%s"', update, context.error)
 
-#######    history_conv            #######
-def history(bot, update):#查詢行程
+#===============================================
+#=================history_conv==================
+def history(bot, update):        #/history 查詢歷史行程
     UserID = update.message.from_user['id']
 
     Tnames = db.getTnames([UserID]) #出來是 tunlp ex:[('name1',),('name2',)]
@@ -118,7 +135,10 @@ def history_output(bot, update): #/history 查詢歷史行程：列出歷史行�
     query.edit_message_text(place_output)
     return ConversationHandler.END
 
-#================================
+#===================================================================
+#===========================機器人核心機能===========================
+#===================================================================
+
 def naming(bot, update):  #行程名稱取名
     logger.info("username: %s start",update.message.from_user)
     update.message.reply_text('請先替這次行程取個名字')
@@ -480,28 +500,63 @@ def done(bot,update):
         else:
             break
 
+    webUrl = getUserwebURL(UserID, travelname[UserID])
+    # callFlask()
     update.message.reply_text('旅泊包幫你安排好行程嘍')
     update.message.reply_text(place_output)
-    update.message.reply_text('http://127.0.0.1/username/Tname')
+    update.message.reply_text('http://127.0.0.1:80' + webUrl)
     update.message.reply_text('希望你喜歡旅泊包安排的行程🐾\n祝你玩得愉快！')
-	#================ bot 天氣提示 ================
+    print('http://127.0.0.1:80' + webUrl )
+
+    getWeather(tmpcounty[UserID], update)
+    
+    return ConversationHandler.END
+
+#===============================================
+#===================天氣用方法===================
+#===============================================
+def getWeather(address, update):
     home_page = 'https://www.cwb.gov.tw/V8/C/W/County/County.html?CID='
-    city_code = city_code_list[tmpcounty[UserID]] #與city_code_list的縣市資料對比數字
+    city_code = city_code_list[address] #與city_code_list的縣市資料對比數字
     url = home_page + city_code
     driver = webdriver.Chrome()
     driver.get(url) #啟動Chrome
-    data = driver.find_element_by_xpath('/html/body/div/div/div/ul').text
-    text = driver.find_element_by_xpath('/html/body/div/div/div/div/a').text
+    weatherAll = driver.find_element_by_xpath('/html/body/div/div/div/ul').text
+    weatherDeatil = driver.find_element_by_xpath('/html/body/div/div/div/div/a').text
     driver.close() #關閉Chrome
-    update.message.reply_text(data)
-    update.message.reply_text(tmpcounty[UserID] + '的天氣狀況：' + text)
-    file = open('weather.csv', 'w') #開新weather.csv 建立新檔，若有資料則覆蓋
-    file.write(text+'\n')
-    file.write(data)
 
-    return ConversationHandler.END
+    update.message.reply_text(weatherAll)
+    update.message.reply_text(address + '的天氣狀況：' + weatherDeatil)
 
-#================ bot 主程式 ================
+    return
+
+#===============================================
+#===================網頁用方法===================
+#===============================================
+def getUserwebURL(UserID, travelname):
+    #產生亂數URL提供給使用者
+    webUserID = UserID
+    webtravelname = travelname
+    webRandom = random.choice('123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@$%^&*qwertyuiopasdfghjklzxcvbnm')
+    detailUrl = webtravelname + webRandom
+    ramdomUserID = ''
+    ramdomlist = []
+
+    seed = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    for i in range(8):
+        ramdomlist.append(random.choice(seed))
+        ramdomUserID = ''.join(ramdomlist)
+
+    Url =  "/" + ramdomUserID + "/" + webtravelname + webRandom
+
+    return Url
+
+def callFlask():
+    import webfunction
+
+#=======================================================================
+#==============================機器人主程式==============================
+#=======================================================================
 conv_handler = ConversationHandler(
         entry_points=[CommandHandler('letsgo', naming)],
 
@@ -557,6 +612,10 @@ history_handler = ConversationHandler(
     },
     fallbacks=[]
 )
+
+#=================================================
+#====================基礎機能設定==================
+#=================================================
 
 # New a dispatcher for bot
 dispatcher = Dispatcher(bot, None)
