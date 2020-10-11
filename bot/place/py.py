@@ -1,4 +1,4 @@
 import PAPI
-a = PAPI.getSearch('台北車站')['result']
+print('test')
 
-print(a['rating'])
+print(PAPI.getNear('台北','休閒農業'))
