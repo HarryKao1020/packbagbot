@@ -14,36 +14,46 @@ from place.PAPI import getNear, getPlace, getSearch
 # _name_ 代表目前執行的模組
 application=Flask(__name__) 
 
-#取出自行命名的行程名字
-Tname = db.getTnames([webUserID]) 
+# #取出自行命名的行程名字
+# Tname = db.getTnames([webUserID]) 
 
-#取出景點名字
-Rawlandmarks = list(db.getPLACE([webUserID, webtravelname]))
-# 過濾none值的所有景點
-landMarkArray = list(filter(None,Rawlandmarks))
+# #取出景點名字
+# Rawlandmarks = db.getPLACE([webUserID, webtravelname])
+# # 過濾none值的所有景點
+# landMarkArray = list(filter(None,Rawlandmarks))
 
-# 把'\r\n'都過濾
-landmarks=[]
-for i in range(0,len(landMarkArray)):
-    r=(str(landMarkArray[i])).rstrip('\r\n')
-    landmarks.append(r)
+# # 把'\r\n'都過濾
+# landmarks=[]
+# for i in range(0,len(landMarkArray)):
+#     r=(str(landMarkArray[i])).rstrip('\r\n')
+#     landmarks.append(r)
 
-# 把list轉成dict
-BigDetail=[]
-for i in range(0,len(landmarks)):
-    addresses= db.getPlaceDetail([landmarks[i]])
-    newAddresses=list(filter(None,addresses))
-    newAddresses.insert(0,landmarks[i]) #把景點名稱也加進來
-    
-    RawPlaceDetail = ['name','address', 'quality', 'tele', 'openTime']
-    dictDetail=dict(zip(RawPlaceDetail,newAddresses))
-    BigDetail.append(dictDetail)
+# # 把list轉成dict
+# BigDetail=[]
+#     for i in range(0,len(landmarks)):
+#         addresses= db.getPlaceDetail([landmarks[i]])
+#         newAddresses=list(filter(None,addresses))
+#         newAddresses.insert(0,landmarks[i]) #把景點名稱也加進來
+#         newAddresses.insert(5,webtravelname+"/"+dt[i]) #加入URL
+#         RawPlaceDetail = ['name','address', 'quality', 'tele', 'openTime','url']
+#         dictDetail=dict(zip(RawPlaceDetail,newAddresses))
+#         BigDetail.append(dictDetail)
 
+# --------URL=使用者ID+TNAME ------------
+webUserID = '1144120088'
+webtravelname = '放棄'
+# webRandom = random.choice('123456789!@$%^&*_qwertyuiopasdfghjklzxcvbnm')
+webUrl =  "/" + webUserID + "/" + webtravelname
+print(webUrl)
+# 函式裝飾:以函式為基礎 提供附加功能
+@application.route("/",methods=['GET'])
+def home():
+    return render_template("index.html")
 #=====================================================
 #=======================網頁機能=======================
 #=====================================================
 
-@application.route('/', methods=['GET'])
+@application.route(webUrl, methods=['GET'])
 def all():
     #取出自行命名的行程名字
     Tname = db.getTnames([webUserID]) 
@@ -52,7 +62,7 @@ def all():
     dt=["detail1","detail2","detail3","detail4","detail5","detail6"]
 
     #取出景點名字
-    Rawlandmarks = list(db.getPLACE([webUserID, webtravelname]))
+    Rawlandmarks = db.getPLACE([webUserID, webtravelname])
     # 過濾none值的所有景點
     landMarkArray = list(filter(None,Rawlandmarks))
 
@@ -83,6 +93,34 @@ def all():
 #=======================================================
 #========================景點細項========================
 #=======================================================
+# ----------------------------共用---------------------------
+#取出自行命名的行程名字
+Tname = db.getTnames([webUserID]) 
+
+#取出景點名字
+Rawlandmarks = db.getPLACE([webUserID, webtravelname])
+# 過濾none值的所有景點
+landMarkArray = list(filter(None,Rawlandmarks))
+
+# 把'\r\n'都過濾
+landmarks=[]
+for i in range(0,len(landMarkArray)):
+    r=(str(landMarkArray[i])).rstrip('\r\n')
+    landmarks.append(r)
+
+# 把list轉成dict
+BigDetail=[]
+for i in range(0,len(landmarks)):
+    addresses= db.getPlaceDetail([landmarks[i]])
+    newAddresses=list(filter(None,addresses))
+    newAddresses.insert(0,landmarks[i]) #把景點名稱也加進來
+    
+
+    RawPlaceDetail = ['name','address', 'quality', 'tele', 'openTime']
+    dictDetail=dict(zip(RawPlaceDetail,newAddresses))
+    BigDetail.append(dictDetail)
+
+
 
 #================第一個景點的個別詳細資料================
 @application.route( webUrl + "/detail1", methods=['GET'])
