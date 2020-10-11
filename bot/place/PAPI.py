@@ -7,47 +7,57 @@ def getNear(county,types):
     pre_rand=99
     rand = 0
     aName=[]
+    tmp_Name=[]
     cnt = 0
+
     while(len(aName)<5):
         cnt += 1
         if cnt == 11:
             break
-        print(aName)
         if types == "特色商圈":
+            rand=random.randint(0,3)
             if rand == pre_rand:
                 rand=random.randint(0,3)
             sub_types=["夜市","老街", "形象商圈", "百貨"]        
             
         elif types == "古蹟廟宇":
+            rand=random.randint(0,3)
             if rand == pre_rand:
                 rand=random.randint(0,3)
             sub_types=["寺廟","教堂","古蹟","軍事基地"]
             
         elif types == "人文藝術":
+            rand=random.randint(0,3)
             if rand == pre_rand:    
                 rand=random.randint(0,3)
             sub_types=["文創園區","博物館","美術館","電影院"]
             
         elif types == "休閒農業":
+            rand=random.randint(0,3)
             if rand == pre_rand:
                 rand=random.randint(0,4)
             sub_types=["觀光工廠","農場","林場","漁場","牧場"]
             
         elif types == "主題樂園":
+            rand=random.randint(0,3)
             if rand == pre_rand:
                 rand= random.randint(0,1)
             sub_types=["遊樂園","水族館"]
             
         elif types == "景觀風景":
+            rand=random.randint(0,3)
             if rand == pre_rand:
                 rand= random.randint(0,5)
             sub_types=["公園綠地","海邊","展望台","自然保護區","風景區","觀景台"]
             
         elif types == "戶外休閒":
+            rand=random.randint(0,3)
             if rand == pre_rand:
                 rand= random.randint(0,3)
             sub_types=["露營區","自行車道","登山步道","溫泉"]
+
         print(sub_types[rand])
+        
         #關鍵字搜尋
         geocode_result = gmaps.geocode(county+' '+sub_types[rand])
         loc = geocode_result[0]['geometry']['location']
@@ -97,21 +107,16 @@ def getNear(county,types):
             name.append(dict(i)['name'])
             rating.append(dict(i)['rating'])
             urt.append(dict(i)['user_ratings_total'])
-
-        #輸出json檔
-        #with open('APIP.json', 'w', encoding='utf-8') as f:
-            #json.dump(stores_info, f)
         
-        a=[]
 
-        for i in range(0,5):
-            if len(stores_info) <= i:
-                break
-            else:
-                a.append(stores_info[i])
-        for i in a:
+        for i in range(0,len(stores_info)):
+            tmp_Name.append(stores_info[i])
+        for i in tmp_Name:
             b = {'name':i['name'],'placeid':i['place_id']}
             aName.append(b)
+            if len(aName)>=5:
+                pre_rand=rand
+                break
         pre_rand=rand
     return aName
 

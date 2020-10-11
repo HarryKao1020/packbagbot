@@ -1,4 +1,4 @@
 import PAPI
-print('test')
 
-print(PAPI.getNear('台北','休閒農業'))
+
+print(PAPI.getNear('台北','特色商圈'))
