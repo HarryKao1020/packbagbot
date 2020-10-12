@@ -500,13 +500,13 @@ def done(bot,update):
         else:
             break
 
-    webUrl = getUserwebURL(UserID, travelname[UserID])
-    # callFlask()
+    webUrl = '/' + str(UserID) + '/' + travelname[UserID]
+
     update.message.reply_text('旅泊包幫你安排好行程嘍')
     update.message.reply_text(place_output)
     update.message.reply_text('http://127.0.0.1:80' + webUrl)
     update.message.reply_text('希望你喜歡旅泊包安排的行程🐾\n祝你玩得愉快！')
-    print('http://127.0.0.1:80' + webUrl )
+    print('http://127.0.0.1' + webUrl )
 
     getWeather(tmpcounty[UserID], update)
     
@@ -533,26 +533,23 @@ def getWeather(address, update):
 #===============================================
 #===================網頁用方法===================
 #===============================================
-def getUserwebURL(UserID, travelname):
-    #產生亂數URL提供給使用者
-    webUserID = UserID
-    webtravelname = travelname
-    webRandom = random.choice('123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@$%^&*qwertyuiopasdfghjklzxcvbnm')
-    detailUrl = webtravelname + webRandom
-    ramdomUserID = ''
-    ramdomlist = []
+# def getUserwebURL(UserID, travelname):
+#     #產生亂數URL提供給使用者
+#     webUserID = UserID
+#     webtravelname = travelname
+#     webRandom = random.choice('123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@$%^&*qwertyuiopasdfghjklzxcvbnm')
+#     detailUrl = webtravelname + webRandom
+#     ramdomUserID = ''
+#     ramdomlist = []
 
-    seed = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    for i in range(8):
-        ramdomlist.append(random.choice(seed))
-        ramdomUserID = ''.join(ramdomlist)
+#     seed = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+#     for i in range(8):
+#         ramdomlist.append(random.choice(seed))
+#         ramdomUserID = ''.join(ramdomlist)
 
-    Url =  "/" + ramdomUserID + "/" + webtravelname + webRandom
+#     Url =  "/" + ramdomUserID + "/" + webtravelname + webRandom
 
-    return Url
-
-def callFlask():
-    import webfunction
+#     return Url
 
 #=======================================================================
 #==============================機器人主程式==============================
