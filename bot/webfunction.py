@@ -106,7 +106,7 @@ def detail2_all(webUserID, webtravelname):
 
     landmarks = getwebplace(webUserID, webtravelname)
 
-    detail2 = getwebDeatil(webUserID, webtravelname)[0]
+    detail2 = getwebDeatil(webUserID, webtravelname)[1]
     detail2Name = detail2['name']
     detail2Address = detail2['address']
     detail2Quality = detail2['quality']   
@@ -125,7 +125,7 @@ def detail3_all(webUserID, webtravelname):
 
     landmarks = getwebplace(webUserID, webtravelname)
 
-    detail3 = getwebDeatil(webUserID, webtravelname)[0]
+    detail3 = getwebDeatil(webUserID, webtravelname)[2]
     detail3Name = detail3['name']
     detail3Address = detail3['address']
     detail3Quality = detail3['quality']   
@@ -136,7 +136,7 @@ def detail3_all(webUserID, webtravelname):
 
     webUrl = webUserID + '/' + webtravelname
 
-    return render_template("details3.html", places = landmarks ,TravelName = webtravelname, d1Name=detail3Name, d1Address=detail3Address, d1Quality=detail3Quality, d1Tele=detail3Tele, d1Opt=detail3Opt, opT=weekDayStr, url=webUrl)
+    return render_template("details3.html", places = landmarks, TravelName = webtravelname, d1Name=detail3Name, d1Address=detail3Address, d1Quality=detail3Quality, d1Tele=detail3Tele, d1Opt=detail3Opt, opT=weekDayStr, url=webUrl)
 
 #================第四個景點的個別詳細資料================
 @application.route("/<webUserID>/<webtravelname>" +  "/detail4")
@@ -144,7 +144,7 @@ def detail4_all(webUserID, webtravelname):
 
     landmarks = getwebplace(webUserID, webtravelname)
 
-    detail4 = getwebDeatil(webUserID, webtravelname)[0]
+    detail4 = getwebDeatil(webUserID, webtravelname)[3]
     detail4Name = detail4['name']
     detail4Address = detail4['address']
     detail4Quality = detail4['quality']   
@@ -155,7 +155,7 @@ def detail4_all(webUserID, webtravelname):
 
     webUrl = webUserID + '/' + webtravelname
 
-    return render_template("details4.html", places = landmarks ,TravelName = webtravelname, d1Name=detail4Name, d1Address=detail4Address, d1Quality=detail4Quality, d1Tele=detail4Tele, d1Opt=detail4Opt, opT=weekDayStr, url=webUrl)
+    return render_template("details4.html", places = landmarks, TravelName = webtravelname, d1Name=detail4Name, d1Address=detail4Address, d1Quality=detail4Quality, d1Tele=detail4Tele, d1Opt=detail4Opt, opT=weekDayStr, url=webUrl)
 
 #================第五個景點的個別詳細資料================
 @application.route("/<webUserID>/<webtravelname>" +  "/detail5")
@@ -163,7 +163,7 @@ def detail5_all(webUserID, webtravelname):
 
     landmarks = getwebplace(webUserID, webtravelname)
 
-    detail5 = getwebDeatil(webUserID, webtravelname)[0]
+    detail5 = getwebDeatil(webUserID, webtravelname)[4]
     detail5Name = detail5['name']
     detail5Address = detail5['address']
     detail5Quality = detail5['quality']   
@@ -174,7 +174,7 @@ def detail5_all(webUserID, webtravelname):
 
     webUrl = webUserID + '/' + webtravelname
 
-    return render_template("details5.html", places = landmarks ,TravelName = webtravelname, d1Name=detail5Name, d1Address=detail5Address, d1Quality=detail5Quality, d1Tele=detail5Tele, d1Opt=detail5Opt, opT=weekDayStr, url=webUrl)
+    return render_template("details5.html", places = landmarks, TravelName = webtravelname, d1Name=detail5Name, d1Address=detail5Address, d1Quality=detail5Quality, d1Tele=detail5Tele, d1Opt=detail5Opt, opT=weekDayStr, url=webUrl)
 
 #=====================================================
 #=======================執行程式=======================
