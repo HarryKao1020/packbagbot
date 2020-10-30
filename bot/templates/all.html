@@ -6,24 +6,26 @@
 
 
 {% block Sights %}
-    {% for sightN in ALLDetail %}
-        <div class="Sights">
-            <a href="{{ sightN.url }}">
-                <p class="Sights">景點名稱：{{ sightN.name }}</p>
-                <p class="Sights_address">地址：{{ sightN.address }} </p>
-            </a>
-        </div>
-        <div class='time'>
-            <img src="/static/img/car.png">
-            <p class="time1">交通時間</p>
-            <p class="time2">21分鐘</p>
-        </div>
+{% for sightN in ALLDetail %}
+<div class="Sights">
+    <a href="{{ sightN.url }}">
+        <p class="Sights">景點名稱：{{ sightN.name }}</p>
+        <p class="Sights_address">地址：{{ sightN.address }} </p>
+    </a>
+</div>
+<div class='time'>
+    <img src="/static/img/car.png">
+    <p class="time1">交通時間</p>
+    <p class="time2">{{ sightN.Time }}</p>
+</div>
 
-        <div class='map'>
-            <img src="/static/img/map.png">
-            <p class="map">開啟導航</p>      
-        </div>
-    {% endfor %}
+<div class='map'>
+    <a href="{{ sightN.mapUrl }}">
+    <img src="/static/img/map.png">
+    <p class="map">開啟導航</p>
+    </a>
+</div>
+{% endfor %}
 
-    
+
 {% endblock %}
