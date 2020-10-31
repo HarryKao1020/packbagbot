@@ -88,7 +88,9 @@ html, body{
     padding: 0px;
     font-family: MyCustomFont, sans-serif;
     background-image: url('/static/img/back.jpg');
-    background-position: center center fixed no-repeat;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center center;
     background-size: cover;
     text-align: justify;
 }
@@ -112,7 +114,7 @@ nav.title2{
 /*===========使用者命名行程文字===========*/
 nav.title3{
     margin-top: -1rem;
-    padding-right: 1rem;;
+    padding-right: 1.5rem;;
     font-size: 0.9rem;
     text-align: right;
 }
@@ -174,19 +176,14 @@ div.content{
 /*==================Sights==================*/
 div.Sights{
     margin-top: 2rem;
-    margin-left: 3rem;
-    margin-right: 1rem;
-    padding-top: 0.3rem;
-    padding-left: 0.5rem;
-    padding-bottom: 0.3rem;
+    padding: 0.5rem 1rem;
     background: rgba(255, 255, 255, 0.6);
-    clear:both
+    clear:both;
 }
 
 div.time{
-    margin-top: 1.5rem;
-    margin-left: 3rem;
-    margin-right: 3vw;
+    margin: 1.5rem 3vw 0 1.5rem;
+
     padding-top: 0.3rem;
     padding-left: 0.5rem;
     padding-bottom: 0.3rem;
@@ -207,7 +204,7 @@ p.time1{
 }
 p.time2{
     margin-top: -0.5rem;
-    margin-left: 3.4rem;
+    margin-left: 3.35rem;
     text-align: left;
 }
 
@@ -241,9 +238,6 @@ a{
 
 
 /*==================detail==================*/
-div.detail{
-    height: 145vw;
-}
 div.detail img{
     position: relative;
     margin-top: 1rem;
@@ -253,6 +247,9 @@ div.detail img{
     max-width: 960px;
     max-height: 540px;
 }   
+.detail{
+    margin-right: 1rem;
+}
 div.detail_text{
     margin: auto;
     position: relative;
@@ -263,14 +260,16 @@ div.detail_text{
 div.detail p.detail_name{
     text-align: center;
     font-size: 1rem;
+    position: relative;
+    margin: 2rem 1rem;
 } 
 div.detail p.detail{
     position: relative;
     top: 3%;
-    left: 5%;
+    left: 7%;
 } 
 div.detail p.detail_time{
-    text-indent: 5rem;
+    text-indent: 6rem;
 }
 div.detail p.back{
     text-align: right;

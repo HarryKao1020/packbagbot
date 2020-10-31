@@ -9,6 +9,9 @@ import random
 from os import path
 from selenium import webdriver
 from flask import Flask, request, render_template
+import requests
+
+
 
 import db
 from place.PAPI import getNear, getPlace, getSearch
