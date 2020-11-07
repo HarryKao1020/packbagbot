@@ -16,6 +16,7 @@ def getNear(county,types,loc):
         if cnt == 3:
             if len(aName) == 0:
                 radius +=500
+                cnt = 0
         elif cnt == 6:
             break
 
@@ -791,8 +792,9 @@ def getNear(county,types,loc):
         if loc == 0:
             geocode_result = gmaps.geocode(county+' '+sub_types[rand])
             loc = geocode_result[0]['geometry']['location']
-            
-        c = county+ ' '+sub_types[rand]
+            c = county+ ' '+sub_types[rand]
+        else:
+            c =sub_types[rand]
         #創建序列存放
         ids=[]
         
@@ -849,7 +851,7 @@ def getNear(county,types,loc):
         for i in tmp_Name:
             
             b = {'name':i['name'],'placeid':i['place_id'],'location':i['geometry']['location']}
-            if "店" not in b['name'] and "門市" not in b['name'] and "協會" not in b['name']  and "運動中心" not in b['name']:
+            if "店" not in b['name'] and "門市" not in b['name'] and "協會" not in b['name']  and "運動中心" not in b['name'] and "五金行" not in b['name'] and "百貨行" not in b['name']:
                 aName.append(b)
             if len(aName)>=5:
                 pre_rand=rand
