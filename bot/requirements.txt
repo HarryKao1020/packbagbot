@@ -1,78 +1,27 @@
-asn1crypto          1.0.1
-astroid             2.3.3
-attrs               19.2.0
-Automat             0.7.0
-beautifulsoup4      4.6.0
-bs4                 0.0.1
-certifi             2019.11.28
-cffi                1.14.0
-chardet             3.0.4
-Click               7.0
-colorama            0.4.3
-constantly          15.1.0
-cryptography        2.8
-cssselect           1.1.0
-cycler              0.10.0
-decorator           4.4.2
-Django              2.0.1
-Flask               1.1.1
-future              0.18.2
-get                 0.0.39
-googlemaps          4.2.0
-hyperlink           19.0.0
-idna                2.6
-image               1.5.17
-incremental         17.5.0
-isort               4.3.21
-itsdangerous        1.1.0
-Jinja2              2.10.3
-lazy-object-proxy   1.4.3
-line-bot-sdk        1.15.0
-lxml                4.4.1
-MarkupSafe          1.1.1
-matplotlib          2.1.0
-mccabe              0.6.1
-numpy               1.13.3
-pandas              1.0.3
-parsel              1.5.2
-Pillow              5.0.0
-pip                 20.1.1
-pipenv              2018.11.26
-post                0.0.26
-prettytable         0.7.2
-psutil              5.6.7
-public              0.0.65
-pyasn1              0.4.7
-pyasn1-modules      0.2.7
-pycparser           2.20
-PyDispatcher        2.0.5
-pygal               2.4.0
-PyHamcrest          1.9.0
-pylint              2.4.4
-pyOpenSSL           19.0.0
-pyparsing           2.2.0
-pyperclip           1.6.0
-pypiwin32           220
-python-dateutil     2.6.1
-python-telegram-bot 12.4.2
-pytube              9.5.3
-pytz                2017.3
-query-string        0.0.28
-queuelib            1.5.0
-request             0.0.26
-requests            2.24.0
-Scrapy              1.7.3
-selenium            3.141.0
-service-identity    18.1.0
-setuptools          45.1.0
-six                 1.14.0
-tornado             6.0.4
-Twisted             19.7.0
-typed-ast           1.4.1
-urllib3             1.25.9
-virtualenv          16.7.9
-virtualenv-clone    0.5.3
-w3lib               1.21.0
-Werkzeug            1.0.1
-wrapt               1.11.2
-zope.interface      4.6.0
+bcrypt==3.1.7
+beautifulsoup4==4.9.1
+bs4==0.0.1
+certifi==2020.6.20
+cffi==1.14.1
+chardet==3.0.4
+click==7.1.2
+cryptography==3.0
+decorator==4.4.2
+Flask==1.1.2
+googlemaps==4.4.2
+idna==2.10
+itsdangerous==1.1.0
+Jinja2==2.11.2
+MarkupSafe==1.1.1
+paramiko==2.7.1
+pycparser==2.20
+PyNaCl==1.4.0
+python-telegram-bot==12.8
+requests==2.24.0
+selenium==3.141.0
+six==1.15.0
+soupsieve==2.0.1
+telegram==0.0.1
+tornado==6.0.4
+urllib3==1.25.10
+Werkzeug==1.0.1
