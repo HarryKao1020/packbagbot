@@ -611,7 +611,7 @@ def place_choose(bot, update):
     
     button = []
     for name in places:
-        button.append([InlineKeyboardButton(name['name'], callback_data=name['placeid'])],)
+        button.append([InlineKeyboardButton(name['name'], callback_data=name['place_id'])],)
     
     keyboard = button
     placebuttontmp.update({UserID:keyboard})
@@ -623,7 +623,7 @@ def place_choose(bot, update):
 def place_fork(bot,update):
     UserID = update.message.from_user['id']
     Text = update.message.text
-    tmpcounty[UserID] = county
+    county = tmpcounty[UserID]
     logger.info("%s prees 自行搜尋景點", UserID)
     if county == "台北":
         if Text == "客運":
