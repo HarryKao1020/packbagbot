@@ -43,7 +43,8 @@ tmpplacedetail = {}  #紀錄地點詳細資訊
 tmpregion      = {}  #紀錄地區
 tmptypes       = {}  #紀錄類型次數
 tmpcounty      = {}  #紀錄縣市
-
+tmplat         = {}  #紀錄緯度
+tmplng         = {}  #紀錄經度
 #===============================================
 #===================天氣用參數===================
 #===============================================
@@ -255,9 +256,7 @@ def detail5_all(webUserID, webtravelname):
 #===============================================
 #=================== bot app ===================
 #===============================================
-@application.route('/')
-def index():
-    return "<h1>Hello World!</h1>"
+
 
 @application.route('/hook', methods=['POST'])
 def webhook_handler():
@@ -479,7 +478,10 @@ def traffic2(bot, update):
         db.setTYPE_three([Text,UserID,travelname[UserID]])
 
     logger.info("type is %s form %s",update.message.text,update.message.from_user)
-    reply_keyboard=[['客運🚌','火車🚂','高鐵🚅']]
+    if tmpcounty[UserID] == "宜蘭" or tmpcounty[UserID] == "花蓮" or tmpcounty[UserID] == "台東" or tmpcounty[UserID] == "屏東" or tmpcounty[UserID] == "南投" or tmpcounty[UserID] == "基隆":
+        reply_keyboard=[['客運🚌','火車🚂']]
+    else:
+        reply_keyboard=[['客運🚌','火車🚂','高鐵🚅']]
     update.message.reply_text('想如何前往呢？',reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
     return TRAFFIC
 
@@ -499,7 +501,7 @@ def confirmbutton(bot, update):
     query.edit_message_text(text="如果要繼續選景點請輸入「 /next 」，\n如果完成行程請輸入「 /done 」")
     return PLACE
 
-def placedetail(bot, update):  #按鈕暫時無作用
+def placedetail(bot, update):  
     UserID = update.callback_query.from_user['id'] 
     query = update.callback_query
     query.answer()
@@ -508,6 +510,9 @@ def placedetail(bot, update):  #按鈕暫時無作用
     name = detail['name']
     rating = str(detail['rating'])
     address = detail['formatted_address']
+    lat = detail['lat']
+    lng = detail['lng']
+
 
     try:
         detail['weekday_text']
@@ -525,6 +530,8 @@ def placedetail(bot, update):  #按鈕暫時無作用
 
     tmpplace.update( {UserID:name} )
     tmpplacedetail.update( {UserID:[name,address,rating,phone,time]} )
+    tmplat.update( {UserID:lat} )
+    tmplng.update( {UserID:lng} )
     
     keyboard = [
         [InlineKeyboardButton("上一頁", callback_data="上一頁")],
@@ -567,7 +574,7 @@ def placeforcar(bot, update):
         while types[i]==None:
             i = random.randint(0,len(types)-1)
     
-    places = getNear(county[0],types[i]) #取得景點名稱
+    places = getNear(county[0],types[i],0) #取得景點名稱
     
     button = []
     for name in places:
@@ -586,6 +593,10 @@ def place_choose(bot, update):
 
     types = db.getTYPE([UserID,travelname[UserID]])
     county = db.getCOUNTY([UserID,travelname[UserID]])
+
+    lat = tmplat[UserID]
+    lng = tmplng[UserID]
+    loc = {'lat':lat,'lng':lng}
     print(types)
     if ((len(types)-1) == 0):
         i = 0
@@ -595,8 +606,8 @@ def place_choose(bot, update):
             i = random.randint(0,len(types)-1)
             
     print(types[i])
-
-    places = getNear(county[0],types[i]) #取得景點名稱
+    
+    places = getNear(county[0],types[i],loc) #取得景點名稱
     
     button = []
     for name in places:
@@ -611,13 +622,169 @@ def place_choose(bot, update):
 
 def place_fork(bot,update):
     UserID = update.message.from_user['id']
-    logger.info("%s prees 自行前往", UserID)
+    Text = update.message.text
+    tmpcounty[UserID] = county
+    logger.info("%s prees 自行搜尋景點", UserID)
+    if county == "台北":
+        if Text == "客運":
+            tmplat.update( {UserID:25.049320} )
+            tmplng.update( {UserID:121.518621} )
+        elif Text == "火車":
+            tmplat.update( {UserID:25.047814} )
+            tmplng.update( {UserID:121.516995} )
+        else:
+            tmplat.update( {UserID:25.047814} )
+            tmplng.update( {UserID:121.516995} )
+    elif county == "新北":
+        if Text == "客運":
+            tmplat.update( {UserID:25.015554} )
+            tmplng.update( {UserID:121.464969} )
+        elif Text == "火車":
+            tmplat.update( {UserID:25.015733} )
+            tmplng.update( {UserID:121.463927} )
+        else:
+            tmplat.update( {UserID:25.014181} )
+            tmplng.update( {UserID:121.463628} )
+    elif county == "基隆":
+        if Text == "客運":
+            tmplat.update( {UserID:25.132090} )
+            tmplng.update( {UserID:121.739545} )
+        elif Text == "火車":
+            tmplat.update( {UserID:25.130151} )
+            tmplng.update( {UserID:121.736903} )   
+    elif county == "桃園":
+        if Text == "客運":
+            tmplat.update( {UserID:24.953382} )
+            tmplng.update( {UserID:121.224074} )
+        elif Text == "火車":
+            tmplat.update( {UserID:24.953475} )
+            tmplng.update( {UserID:121.225736} )
+        else:
+            tmplat.update( {UserID:25.013033} )
+            tmplng.update( {UserID:121.214855} )
+    elif county == "新竹":
+        if Text == "客運":
+            tmplat.update( {UserID:24.801126} )
+            tmplng.update( {UserID:120.972365} )
+        elif Text == "火車":
+            tmplat.update( {UserID:24.801638} )
+            tmplng.update( {UserID:120.971695} )
+        else:
+            tmplat.update( {UserID:24.808065} )
+            tmplng.update( {UserID:121.040410} )
+    elif county == "苗栗":
+        if Text == "客運":
+            tmplat.update( {UserID:24.569533} )
+            tmplng.update( {UserID:120.822915} )
+        elif Text == "火車":
+            tmplat.update( {UserID:24.570097} )
+            tmplng.update( {UserID:120.822502} )
+        else:
+            tmplat.update( {UserID:24.605722} )
+            tmplng.update( {UserID:120.825364} )
+    elif county == "台中":
+        if Text == "客運":
+            tmplat.update( {UserID:24.138225} )
+            tmplng.update( {UserID:120.686876} )
+        elif Text == "火車":
+            tmplat.update( {UserID:24.136781} )
+            tmplng.update( {UserID:120.822502} )
+        else:
+            tmplat.update( {UserID:24.111751} )
+            tmplng.update( {UserID:120.615812} )
+    elif county == "彰化":
+        if Text == "客運":
+            tmplat.update( {UserID:23.962469} )
+            tmplng.update( {UserID:120.568966} )
+        elif Text == "火車":
+            tmplat.update( {UserID:24.081675} )
+            tmplng.update( {UserID:120.538539} )
+        else:
+            tmplat.update( {UserID:23.874338} )
+            tmplng.update( {UserID:120.574738} )
+    elif county == "南投":
+        if Text == "客運":
+            tmplat.update( {UserID:23.905656} )
+            tmplng.update( {UserID:120.689121} )
+        elif Text == "火車":
+            tmplat.update( {UserID:23.826967} )
+            tmplng.update( {UserID:120.784819} )
+    elif county == "雲林":
+        if Text == "客運":
+            tmplat.update( {UserID:23.800189} )
+            tmplng.update( {UserID:120.462193} )
+        elif Text == "火車":
+            tmplat.update( {UserID:23.711684} )
+            tmplng.update( {UserID:120.541344} )
+        else:
+            tmplat.update( {UserID:23.735727} )
+            tmplng.update( {UserID:120.415990} )
+    elif county == "嘉義":
+        if Text == "客運":
+            tmplat.update( {UserID:23.480174} )
+            tmplng.update( {UserID:120.439450} )
+        elif Text == "火車":
+            tmplat.update( {UserID:23.479129} )
+            tmplng.update( {UserID:120.441149} )
+        else:
+            tmplat.update( {UserID:23.453381} )
+            tmplng.update( {UserID:120.323794} )
+    elif county == "台南":
+        if Text == "客運":
+            tmplat.update( {UserID:23.002249} )
+            tmplng.update( {UserID:120.209059} )
+        elif Text == "火車":
+            tmplat.update( {UserID:22.997142} )
+            tmplng.update( {UserID:120.212948} )
+        else:
+            tmplat.update( {UserID:22.924770} )
+            tmplng.update( {UserID:120.285664} )
+    elif county == "高雄":
+        if Text == "客運":
+            tmplat.update( {UserID:22.637837} )
+            tmplng.update( {UserID:120.303772} )
+        elif Text == "火車":
+            tmplat.update( {UserID:22.639344} )
+            tmplng.update( {UserID:120.302461} )
+        else:
+            tmplat.update( {UserID:22.687204} )
+            tmplng.update( {UserID:120.307615} )
+    elif county == "屏東":
+        if Text == "客運":
+            tmplat.update( {UserID:22.669372} )
+            tmplng.update( {UserID:120.485327} )
+        elif Text == "火車":
+            tmplat.update( {UserID:22.668852} )
+            tmplng.update( {UserID:120.486442} )
+    elif county == "花蓮":
+        if Text == "客運":
+            tmplat.update( {UserID:23.993399} )
+            tmplng.update( {UserID:121.603858} )
+        elif Text == "火車":
+            tmplat.update( {UserID:23.993855} )
+            tmplng.update( {UserID:121.602220} )
+    elif county == "宜蘭":
+        if Text == "客運":
+            tmplat.update( {UserID:24.750899} )
+            tmplng.update( {UserID:121.759273} )
+        elif Text == "火車":
+            tmplat.update( {UserID:24.754673} )
+            tmplng.update( {UserID:121.758048} )
+    elif county == "台東":
+        if Text == "客運":
+            tmplat.update( {UserID:22.752829} )
+            tmplng.update( {UserID:121.147286} )
+        elif Text == "火車":
+            tmplat.update( {UserID:22.793155} )
+            tmplng.update( {UserID:121.123530} )
+
 
     update.message.reply_text('想要自己選擇景點請輸入景點名稱\n如果希望由旅泊包安排請點選👇\n/go')
     
+
     return SEARCH_PLACE
     
-def search_placedetail(bot, update):  #按鈕暫時無作用
+def search_placedetail(bot, update):  
     UserID = update.message.from_user['id']
     Text = update.message.text
     Text = Text.replace(" ","")
