@@ -459,7 +459,7 @@ def traffic(bot, update):
     Text = update.message.text
     cntplace.update( {UserID:1} )
     print(Text)
-    if Text != '/done':
+    if Text != '/done' or Text != '大眾運輸🚌' or Text != '其他🚂' :
         Text = Text.replace(" ","")
         db.setTYPE_three([Text,UserID,travelname[UserID]])
 
