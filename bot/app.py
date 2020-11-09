@@ -423,7 +423,7 @@ def type_one(bot, update):
     db.setTname([UserID,travelname[UserID]]) #儲存旅遊名稱
     db.setCOUNTY([tmpcounty[UserID], UserID, travelname[UserID]]) #儲存縣市
 
-    reply_keyboard=[['特色商圈','古蹟廟宇'],['人文藝術','景觀風景'],['休閒農業','戶外休閒'],['主題樂園','無礙障旅遊']]
+    reply_keyboard=[['特色商圈','古蹟廟宇'],['人文藝術','景觀風景'],['休閒農業','戶外休閒'],['主題樂園']]
     update.message.reply_text('請問有什麼想去的景點類型呢？',reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
     return TYPE_ONE
 
@@ -433,7 +433,7 @@ def type_two(bot, update):
     Text = Text.replace(" ","")
     db.setTYPE_one([Text,UserID,travelname[UserID]])
 
-    reply_keyboard=[['特色商圈','古蹟廟宇'],['人文藝術','景觀風景'],['休閒農業','戶外休閒'],['主題樂園','無礙障旅遊'],['/done']]
+    reply_keyboard=[['特色商圈','古蹟廟宇'],['人文藝術','景觀風景'],['休閒農業','戶外休閒'],['主題樂園'],['/done']]
     update.message.reply_text(f'你選擇的是「{Text}」，\n還有其他有興趣的類型嗎？\n如果沒有，請幫我選擇「/done」',reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
     if update.message.text != "/done":
         logger.info("%s is choose %s", update.message.from_user, update.message.text)
@@ -446,7 +446,7 @@ def type_three(bot, update):
     Text = Text.replace(" ","")
     db.setTYPE_two([Text,UserID,travelname[UserID]])
     
-    reply_keyboard=[['特色商圈','古蹟廟宇'],['人文藝術','景觀風景'],['休閒農業','戶外休閒'],['主題樂園','無礙障旅遊'],['/done']]
+    reply_keyboard=[['特色商圈','古蹟廟宇'],['人文藝術','景觀風景'],['休閒農業','戶外休閒'],['主題樂園'],['/done']]
     update.message.reply_text(f'你選擇的是「{Text}」，\n還有其他有興趣的類型嗎？\n如果沒有，請幫我選擇「/done」',reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
     if update.message.text != "/done":
         logger.info("%s is choose %s", update.message.from_user, update.message.text)
@@ -459,7 +459,7 @@ def traffic(bot, update):
     Text = update.message.text
     cntplace.update( {UserID:1} )
     print(Text)
-    if Text != '/done' or Text != '大眾運輸🚌' or Text != '其他🚂' :
+    if Text != '/done':
         Text = Text.replace(" ","")
         db.setTYPE_three([Text,UserID,travelname[UserID]])
 
@@ -472,10 +472,7 @@ def traffic2(bot, update):
     UserID = update.message.from_user['id']
     Text = update.message.text
     cntplace.update( {UserID:1} )
-    print(Text)
-    if Text != '/done':
-        Text = Text.replace(" ","")
-        db.setTYPE_three([Text,UserID,travelname[UserID]])
+   
 
     logger.info("type is %s form %s",update.message.text,update.message.from_user)
     if tmpcounty[UserID] == "宜蘭" or tmpcounty[UserID] == "花蓮" or tmpcounty[UserID] == "台東" or tmpcounty[UserID] == "屏東" or tmpcounty[UserID] == "南投" or tmpcounty[UserID] == "基隆":
