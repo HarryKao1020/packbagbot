@@ -578,7 +578,7 @@ def placeforcar(bot, update):
     
     button = []
     for name in places:
-        button.append([InlineKeyboardButton(name['name'], callback_data=name['placeid'])],)
+        button.append([InlineKeyboardButton(name['name'], callback_data=name['place_id'])],)
     keyboard = button
     placebuttontmp.update({UserID:keyboard})
     markup = InlineKeyboardMarkup(keyboard)
@@ -945,7 +945,7 @@ conv_handler = ConversationHandler(
                     MessageHandler(Filters.regex('^(客運🚌)$'), place_fork),
                     MessageHandler(Filters.regex('^(火車🚂)$'), place_fork),
                     MessageHandler(Filters.regex('^(高鐵🚅)$'), place_fork),
-                    MessageHandler(Filters.regex('^(其他🚂)$'), place_fork),
+                    MessageHandler(Filters.regex('^(其他🚂)$'), placeforcar),
             ],
             SEARCH_PLACE:[CommandHandler('restart', restart),
                 CommandHandler('go',place_choose),
