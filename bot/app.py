@@ -556,33 +556,6 @@ def returnplace(bot, update):
 
     return PLACE
 
-def placeforcar(bot, update):
-    UserID = update.message.from_user['id']
-    logger.info("%s prees 自行前往", UserID)
-
-    types = db.getTYPE([UserID,travelname[UserID]])
-    county = db.getCOUNTY([UserID,travelname[UserID]])
-    print(types)
-    
-    if ((len(types)-1) == 0):
-        i = 0
-    else:
-        i = random.randint(0,len(types)-1)
-        while types[i]==None:
-            i = random.randint(0,len(types)-1)
-    
-    places = getNear(county[0],types[i],0) #取得景點名稱
-    
-    button = []
-    for name in places:
-        button.append([InlineKeyboardButton(name['name'], callback_data=name['place_id'])],)
-    keyboard = button
-    placebuttontmp.update({UserID:keyboard})
-    markup = InlineKeyboardMarkup(keyboard)
-    update.message.reply_text('想開車去哪裡玩呢？',reply_markup=markup)
-
-    return PLACE
-
 #================ 選擇景點(第二個~結束) ================
 def place_choose(bot, update):
     UserID = update.message.from_user['id']
@@ -590,9 +563,14 @@ def place_choose(bot, update):
 
     types = db.getTYPE([UserID,travelname[UserID]])
     county = db.getCOUNTY([UserID,travelname[UserID]])
-
-    lat = tmplat[UserID]
-    lng = tmplng[UserID]
+    try:
+        lat = tmplat[UserID]
+    except:
+        lat = 0
+    try:
+        lng = tmplng[UserID]
+    except:
+        lng = 0
     loc = {'lat':lat,'lng':lng}
     print(types)
     if ((len(types)-1) == 0):
@@ -942,7 +920,7 @@ conv_handler = ConversationHandler(
                     MessageHandler(Filters.regex('^(客運🚌)$'), place_fork),
                     MessageHandler(Filters.regex('^(火車🚂)$'), place_fork),
                     MessageHandler(Filters.regex('^(高鐵🚅)$'), place_fork),
-                    MessageHandler(Filters.regex('^(其他🚂)$'), placeforcar),
+                    MessageHandler(Filters.regex('^(其他🚂)$'), place_fork),
             ],
             SEARCH_PLACE:[CommandHandler('restart', restart),
                 CommandHandler('go',place_choose),
