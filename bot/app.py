@@ -332,7 +332,6 @@ def history_output(bot, update): #/history 查詢歷史行程：列出歷史行�
     
     history_URL = 'http://127.0.0.1:5000/' + str(UserID) + '/' + Tname
 
-    query.edit_message_text(history_URL)
     query.edit_message_text(place_output +"\n" + history_URL)
 
     return ConversationHandler.END
