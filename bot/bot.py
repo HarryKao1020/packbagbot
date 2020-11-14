@@ -108,7 +108,7 @@ def history_output(bot, update): #/history 查詢歷史行程：列出歷史行�
         else:
             break
     
-    history_URL = 'http://127.0.0.1:5000/' + str(UserID) + '/' + Tname
+    history_URL = 'https://packbot.japaneast.cloudapp.azure.com:8080/' + str(UserID) + '/' + Tname
 
     query.edit_message_text(place_output +"\n" + history_URL)
 
@@ -626,9 +626,9 @@ def done(bot,update):
 
     update.message.reply_text('旅泊包幫你安排好行程嘍')
     update.message.reply_text(place_output)
-    update.message.reply_text('http://127.0.0.1:5000' + webUrl)
+    update.message.reply_text('https://packbot.japaneast.cloudapp.azure.com:8080' + webUrl)
     update.message.reply_text('希望你喜歡旅泊包安排的行程🐾\n祝你玩得愉快！')
-    print('http://127.0.0.1' + webUrl )
+    print('https://packbot.japaneast.cloudapp.azure.com:8080' + webUrl )
 
     getWeather(tmpcounty[UserID], update)
     

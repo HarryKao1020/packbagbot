@@ -251,4 +251,4 @@ dispatcher.add_handler(MessageHandler(Filters.text, warnnn))
 
 # Running server
 if __name__ == "__main__":
-    application.run(debug=True)
+    application.run(debug=True,port=8080,host='0.0.0.0',ssl_context=('.\\ca\\certificate.crt','.\\ca\\private.key'))
