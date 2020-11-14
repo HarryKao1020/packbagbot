@@ -74,8 +74,8 @@ def error(update, context):
 #=================history_conv==================
 def history(bot, update):        #/history 查詢歷史行程
     UserID = update.message.from_user['id']
-
     Tnames = db.getTnames([UserID]) #出來是 tunlp ex:[('name1',),('name2',)]
+    
     if Tnames:
         reply = '這是你過去安排的行程:\n'
         keyboard = []
@@ -84,11 +84,13 @@ def history(bot, update):        #/history 查詢歷史行程
             keyboard.append([InlineKeyboardButton(Tname[0], callback_data=Tname[0])],)
 
         reply_markup = InlineKeyboardMarkup(keyboard)
-        update.message.reply_text(reply,reply_markup=reply_markup)
+        update.message.reply_text(reply, reply_markup = reply_markup)
+
     else:
         reply = '你還沒有安排拉'
         update.message.reply_text(reply)
         return ConversationHandler.END
+
     return HISTORY
 
 def history_output(bot, update): #/history 查詢歷史行程：列出歷史行程的景點
@@ -96,17 +98,20 @@ def history_output(bot, update): #/history 查詢歷史行程：列出歷史行�
     UserID = query.from_user['id']
     Tname = query.data
     
-    landmarks = db.getPLACE([UserID,Tname])
+    landmarks = db.getPLACE([UserID, Tname])
     i = 1
     place_output = ""
     for landmark in landmarks:
         if landmark:
-            place_output += str(i) +". "+landmark + "\n"
+            place_output += str(i) + ". " + landmark + "\n"
             i += 1
         else:
             break
+    
+    history_URL = 'http://127.0.0.1:5000/' + str(UserID) + '/' + Tname
 
-    query.edit_message_text(place_output)
+    query.edit_message_text(place_output +"\n" + history_URL)
+
     return ConversationHandler.END
 
 #===================================================================
