@@ -114,7 +114,7 @@ def getwebDeatil(ID, TName):
 
 #===========取經緯度資料===========
 def getLocation(location):
-    url = "https://maps.googleapis.com/maps/api/geocode/json?address="+location+"&key=AIzaSyDYnRmUfEmD5AHscwduwGgpyMPRHKxKwpc&language=zh-TW"
+    url = "https://maps.googleapis.com/maps/api/geocode/json?address="+location+"&key=1201089449:AIzaSyCYgOtQk-28konKnuxfYZeAbUjq1uMD3-Y&language=zh-TW"
     print(url)
 
     r = requests.get(url, verify=False)
@@ -132,7 +132,7 @@ def getMap(loc):
 
 #===========取得前往時間===========
 def getTime(origin, destination):
-    url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=" + origin + "&destinations=" + destination + "=&key=AIzaSyAZZSdiWrwGceupgus3xLLNjcg6Vdi5TkQ"
+    url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=" + origin + "&destinations=" + destination + "=&key=AIzaSyCYgOtQk-28konKnuxfYZeAbUjq1uMD3-Y"
     r = requests.get(url, verify=False)
     list_of_dicts = r.json()
     # 取時間
