@@ -85,26 +85,30 @@ def getwebDeatil(ID, TName):
     # url名字需要
     dt = ["detail1", "detail2", "detail3", "detail4", "detail5"]
 
-    landmarks = getwebplace(ID, TName)
+    landmarks = getwebplace(ID, str(TName))
 
     # 把list轉成dict
     BigDetail = []
     for i in range(0, len(landmarks)):
-        addresses = db.getPlaceDetail([landmarks[i]])
+
         # print("景點:"+landmarks[i])
         mapUrl = getMap(landmarks[i])
         # print("MAPurl:"+mapUrl)
+
+        if i < len(landmarks)-1:
+            # 傳入地址，獲得行車時間
+            addresses = db.getPlaceDetail([landmarks[i]])
+            addresses2 = db.getPlaceDetail([landmarks[i+1]])
+            Time = getTime(addresses[0], addresses2[0]) + '分鐘'
+        else:
+            addresses = db.getPlaceDetail([landmarks[i]])
+            Time = "回家囉"
+
         newAddresses = list(filter(None, addresses))
         newAddresses.insert(0, landmarks[i])         # 把景點名稱也加進來
         newAddresses.insert(5, TName + "/" + dt[i])  # 加入URL 
         newAddresses.insert(6, mapUrl)               # 加入MapURL
-
-        if i < len(landmarks)-1:
-            Time = getTime(landmarks[i], landmarks[i+1]) + '分鐘'
-        else:
-            Time = "回家囉"
-
-        newAddresses.insert(7, Time)
+        newAddresses.insert(7, Time)                 # 加入Time
 
         RawPlaceDetail = ['name', 'address','quality', 'tele', 'openTime', 'url', 'mapUrl', 'Time']
         dictDetail = dict(zip(RawPlaceDetail, newAddresses))
@@ -114,7 +118,7 @@ def getwebDeatil(ID, TName):
 
 #===========取經緯度資料===========
 def getLocation(location):
-    url = "https://maps.googleapis.com/maps/api/geocode/json?address="+location+"&key=1201089449:AIzaSyCYgOtQk-28konKnuxfYZeAbUjq1uMD3-Y&language=zh-TW"
+    url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + location + "&key=1201089449:AIzaSyBCfFGAnQ-o2WCGtwHA3USnMsZ7eB2lN60&language=zh-TW"
     print(url)
 
     r = requests.get(url, verify=False)
@@ -132,7 +136,7 @@ def getMap(loc):
 
 #===========取得前往時間===========
 def getTime(origin, destination):
-    url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=" + origin + "&destinations=" + destination + "=&key=AIzaSyCYgOtQk-28konKnuxfYZeAbUjq1uMD3-Y"
+    url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=" + origin + "&destinations=" + destination + "=&key=AIzaSyBCfFGAnQ-o2WCGtwHA3USnMsZ7eB2lN60"
     r = requests.get(url, verify=False)
     list_of_dicts = r.json()
     # 取時間
@@ -271,7 +275,7 @@ def webhook_handler():
 #===================機器人指令===================
 #===============================================
 def help_handler(bot, update): #/help 功能介紹
-    update.message.reply_text('指令教學 \n/letsgo 立刻開始使用 \n/history 查詢歷史行程 \n/restart 遇到問題時刷新機器人')
+    update.message.reply_text('指令教學 \n/start 介紹旅泊包功能\n/letsgo 立刻開始使用 \n/history 查詢歷史行程 \n/restart 遇到問題時刷新機器人')
 
 def greet(bot, update):        #/start 機器人打招呼 
     update.message.reply_text('HI~我是旅泊包🎒 \n 我能依照你的喜好，推薦熱門景點給你')
