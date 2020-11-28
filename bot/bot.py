@@ -51,6 +51,7 @@ def help_handler(bot, update): #/help 功能介紹
 def greet(bot, update):        #/start 機器人打招呼 
     update.message.reply_text('HI~我是旅泊包🎒 \n 我能依照你的喜好，推薦熱門景點給你')
     update.message.reply_text('準備要去旅行了嗎 ٩(ˊᗜˋ*)و \n立即輸入 /letsgo 開始使用！\n 如果要參考歷史行程請輸入 /history')
+	update.message.reply_text('小提醒: 點選對話欄位中藍色的字即可快速輸入指令')
 
 def restart(bot,update):       #/restart
     UserID = [update.message.from_user['id']]
@@ -340,7 +341,7 @@ def returnplace(bot, update):
 def place_choose(bot, update):
     UserID = update.message.from_user['id']
     logger.info("%s prees 自行前往", UserID)
-
+	update.message.reply_text('旅泊包正在搜尋景點中.....')
     types = db.getTYPE([UserID,travelname[UserID]])
     county = db.getCOUNTY([UserID,travelname[UserID]])
     try:
