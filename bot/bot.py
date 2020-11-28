@@ -6,12 +6,9 @@ import configparser
 import logging
 import random
 from os import path
-from selenium import webdriver
 from flask import Flask, request, render_template
 import requests
-
-
-
+import csv
 import db
 from place.PAPI import getNear, getPlace, getSearch
 NAMING, DIRECTION, COUNTY, TYPE_ONE, TYPE_TWO, TYPE_THREE, TRAFFIC, SEARCH_PLACE, PLACE, PLACE_TWO,HISTORY = range(11)
@@ -42,14 +39,14 @@ tmplat         = {}  #紀錄緯度
 tmplng         = {}  #紀錄經度
 
 
-city_code_list={  #各縣市ID
-    "基隆":"10017", "台北":"63", "新北":"65", "桃園":"68", "新竹":"10018", "苗栗":"10005", "台中":"66", "南投":"10008", "彰化":"10007", "雲林":"10009", "嘉義":"10020", "台南":"67", "高雄":"64", "屏東":"10013", "台東":"10014", "花蓮":"10015", "宜蘭":"10002",
+city_code={ #縣市ID清單
+    "基隆":"1", "台北":"2", "新北":"3", "桃園":"4", "新竹":"5", "苗栗":"6", "台中":"7", "南投":"8", "彰化":"9", "雲林":"10", "嘉義":"11", "台南":"12", "高雄":"13", "屏東":"14", "台東":"15", "花蓮":"16", "宜蘭":"17",
 }
 #===============================================
 #===================機器人指令===================
 #===============================================
 def help_handler(bot, update): #/help 功能介紹
-    update.message.reply_text('指令教學 \n/letsgo 立刻開始使用 \n/history 查詢歷史行程 \n/restart 遇到問題時刷新機器人')
+    update.message.reply_text('指令教學 \n/start 介紹旅泊包\n/letsgo 立刻開始使用 \n/history 查詢歷史行程 \n/restart 遇到問題時刷新機器人')
 
 def greet(bot, update):        #/start 機器人打招呼 
     update.message.reply_text('HI~我是旅泊包🎒 \n 我能依照你的喜好，推薦熱門景點給你')
@@ -255,7 +252,7 @@ def traffic2(bot, update):
     UserID = update.message.from_user['id']
     Text = update.message.text
     cntplace.update( {UserID:1} )
-   
+
 
     logger.info("type is %s form %s",update.message.text,update.message.from_user)
     if tmpcounty[UserID] == "宜蘭" or tmpcounty[UserID] == "花蓮" or tmpcounty[UserID] == "台東" or tmpcounty[UserID] == "屏東" or tmpcounty[UserID] == "南投" or tmpcounty[UserID] == "基隆":
@@ -630,25 +627,31 @@ def done(bot,update):
     update.message.reply_text('希望你喜歡旅泊包安排的行程🐾\n祝你玩得愉快！')
     print('http://packbotbeta.japaneast.cloudapp.azure.com:5000' + webUrl )
 
-    getWeather(tmpcounty[UserID], update)
+    webtextInf(tmpcounty[UserID], update)
     
     return ConversationHandler.END
 
 #===============================================
 #===================天氣用方法===================
 #===============================================
-def getWeather(address, update):
-    home_page = 'https://www.cwb.gov.tw/V8/C/W/County/County.html?CID='
-    city_code = city_code_list[address] #與city_code_list的縣市資料對比數字
-    url = home_page + city_code
-    driver = webdriver.Chrome()
-    driver.get(url) #啟動Chrome
-    weatherAll = driver.find_element_by_xpath('/html/body/div/div/div/ul').text
-    weatherDeatil = driver.find_element_by_xpath('/html/body/div/div/div/div/a').text
-    driver.close() #關閉Chrome
 
-    update.message.reply_text(weatherAll)
-    update.message.reply_text(address + '的天氣狀況：' + weatherDeatil)
+# 傳入地區名字。例如：台中、台北；無回傳值，直接讓機器人講話。
+def webtextInf(address, update):
+    #數值轉換。例如：基隆=1；台北=2。
+    citynum = city_code[address]
+    citynum = int(citynum)
+
+    #開啟CSV並讀取檔案
+    file =open('weather.csv','r')
+    lines=file.readlines()
+    file.close()
+    row=[]#定義行陣列
+    for line in lines:
+        row.append(line.split(','))
+
+    # 基隆=16*1 ; 台北=16*2 以此類推
+    webtext = row[16*citynum]
+    update.message.reply_text(address + '的天氣狀況：' + webtext)
 
     return
 
