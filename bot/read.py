@@ -29,7 +29,7 @@ def webtextInf(address):
     citynum = int(citynum)
 
     #開啟CSV並讀取檔案
-    file =open('weather.csv','r')
+    file =open('weather.csv','r',encoding='gb18030')
     lines=file.readlines()
     file.close()
     row=[]#定義行陣列

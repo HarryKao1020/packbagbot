@@ -19,7 +19,7 @@ for i in range(len(itemlist)):
 
     if i == 0:
 
-        with open("weather.csv", "w") as csvfile:
+        with open("weather.csv", "w",,encoding='gb18030') as csvfile:
             wr = csv.writer(csvfile)
             wr.writerow(["縣市", "溫度", "細項"])
             wr.writerow([itemlist[i], weatherAll, weatherDeatil])
@@ -27,7 +27,7 @@ for i in range(len(itemlist)):
 
     else:
 
-        with open("weather.csv", "a") as csvfile:
+        with open("weather.csv", "a",,encoding='gb18030') as csvfile:
             wr = csv.writer(csvfile)
             wr.writerow([itemlist[i], weatherAll, weatherDeatil])
         print( itemlist[i] + '哈哈哈存完了' )

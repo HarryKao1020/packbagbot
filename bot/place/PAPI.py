@@ -3,14 +3,22 @@ import json
 import random
 gmaps = googlemaps.Client(key='AIzaSyDqdpn60A0oJ-L6loskqFIz6bD_X8cksFw')
 
-def getNear(county,types,loc):
+def getNear(county,typess,loc):
     pre_rand=99
     rand = 0
     aName=[]
-    radius = 500
+    radius = 3000
     cnt = 0
 
     while(len(aName)<5):
+        if ((len(typess)-1) == 0):
+            i = 0
+        else:
+            i = random.randint(0,len(typess)-1)
+        while typess[i]==None:
+            i = random.randint(0,len(typess)-1)
+        types = typess[i]
+
         tmp_Name=[]
         cnt += 1
         if cnt == 3:
@@ -860,7 +868,7 @@ def getNear(county,types,loc):
                         aName.append(b)
             else:
                 aName.append(b)
-            if len(aName)>=5:
+            if len(aName)>=2:
                 pre_rand=rand
                 break
         pre_rand=rand
@@ -887,9 +895,9 @@ def getPlace(a):
             c.update(d)
     return c
 
-def getSearch(place):
-    
-    getS = gmaps.find_place(input=place, input_type='textquery', language='zh-TW')
+def getSearch(county,place):
+    query = county + place
+    getS = gmaps.find_place(input=query, input_type='textquery', language='zh-TW')
     place_info = getS['candidates'][0]
     getP = gmaps.place(place_id=place_info['place_id'], fields=['name', 'formatted_address', 'formatted_phone_number', 'geometry/location', 'opening_hours', 'user_ratings_total', 'rating'] ,language='zh-TW')
     return getP
