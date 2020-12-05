@@ -209,6 +209,7 @@ conv_handler = ConversationHandler(
             SEARCH_PLACE:[CommandHandler('restart', restart),
                 CommandHandler('go',place_choose),
                 CommandHandler('done', place_choose),
+                CommandHandler('exit', done)
                 MessageHandler(Filters.text, search_placedetail),
                 CallbackQueryHandler(search_confirmbutton, pattern='^' + str(search_confirmbutton) + '$'),
                 
@@ -251,4 +252,4 @@ dispatcher.add_handler(MessageHandler(Filters.text, warnnn))
 
 # Running server
 if __name__ == "__main__":
-    application.run(debug=True)
+    application.run(host='0.0.0.0',debug=True)

@@ -596,7 +596,7 @@ def search_confirmbutton(bot, update):
     cntplace[UserID]+=1
     print(cntplace[UserID])
     
-    query.edit_message_text(text="如果要繼續輸入景點直接填寫，\n如果由旅泊包安排請輸入「 /done 」")
+    query.edit_message_text(text="如果要繼續輸入景點直接填寫，\n如果由旅泊包安排請輸入「 /done 」\n如果要結束安排請輸入「 /exit 」")
     return SEARCH_PLACE
 
 #================ bot 完成行程 ================
@@ -645,7 +645,7 @@ def webtextInf(address, update):
 
     # 基隆=16*1 ; 台北=16*2 以此類推
     webtext = row[16*citynum]
-    update.message.reply_text(address + '的天氣狀況：' + webtext)
+    update.message.reply_text(address + '的天氣狀況：\n' + webtext[0] + webtext[1])
 
     return
 
