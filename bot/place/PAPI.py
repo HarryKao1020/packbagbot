@@ -30,10 +30,10 @@ def getNear(county,typess,loc):
 
         if  county == "台北": 
             if types == "特色商圈":
-                rand=random.randint(0,3)
+                rand=random.randint(0,2)
                 if rand == pre_rand:
-                    rand=random.randint(0,3)
-                sub_types=["夜市","商街", "百貨","市集"]        
+                    rand=random.randint(0,2)
+                sub_types=["夜市","商街", "市集"]        
                 
             elif types == "古蹟廟宇":
                 rand=random.randint(0,3)
@@ -73,10 +73,10 @@ def getNear(county,typess,loc):
 
         elif county == "新北":
             if types == "特色商圈":
-                rand=random.randint(0,4)
+                rand=random.randint(0,3)
                 if rand == pre_rand:
-                    rand=random.randint(0,4)
-                sub_types=["夜市","老街", "形象商圈", "百貨","市集"]        
+                    rand=random.randint(0,3)
+                sub_types=["夜市","老街", "形象商圈","市集"]        
                 
             elif types == "古蹟廟宇":
                 rand=random.randint(0,3)
@@ -116,10 +116,10 @@ def getNear(county,typess,loc):
         
         elif county == "基隆":
             if types == "特色商圈":
-                rand=random.randint(0,4)
+                rand=random.randint(0,3)
                 if rand == pre_rand:
-                    rand=random.randint(0,4)
-                sub_types=["夜市","老街", "形象商圈", "百貨","市集"]        
+                    rand=random.randint(0,3)
+                sub_types=["夜市","老街", "形象商圈","市集"]        
                 
             elif types == "古蹟廟宇":
                 rand=random.randint(0,3)
@@ -159,10 +159,10 @@ def getNear(county,typess,loc):
         
         elif county == "桃園":
             if types == "特色商圈":
-                rand=random.randint(0,4)
+                rand=random.randint(0,3)
                 if rand == pre_rand:
-                    rand=random.randint(0,4)
-                sub_types=["夜市","老街", "形象商圈", "百貨","市集"]        
+                    rand=random.randint(0,3)
+                sub_types=["夜市","老街", "形象商圈", "市集"]        
                 
             elif types == "古蹟廟宇":
                 rand=random.randint(0,3)
@@ -202,10 +202,10 @@ def getNear(county,typess,loc):
         
         elif county == "新竹":
             if types == "特色商圈":
-                rand=random.randint(0,4)
+                rand=random.randint(0,3)
                 if rand == pre_rand:
-                    rand=random.randint(0,4)
-                sub_types=["夜市","老街", "形象商圈", "百貨","市集"]        
+                    rand=random.randint(0,3)
+                sub_types=["夜市","老街", "形象商圈", "市集"]        
                 
             elif types == "古蹟廟宇":
                 rand=random.randint(0,3)
@@ -245,10 +245,10 @@ def getNear(county,typess,loc):
         
         elif county == "苗栗":
             if types == "特色商圈":
-                rand=random.randint(0,4)
+                rand=random.randint(0,3)
                 if rand == pre_rand:
-                    rand=random.randint(0,4)
-                sub_types=["夜市","老街", "形象商圈", "百貨","市集"]        
+                    rand=random.randint(0,3)
+                sub_types=["夜市","老街", "形象商圈", "市集"]        
                 
             elif types == "古蹟廟宇":
                 rand=random.randint(0,3)
@@ -288,10 +288,10 @@ def getNear(county,typess,loc):
         
         elif county == "台中":
             if types == "特色商圈":
-                rand=random.randint(0,4)
+                rand=random.randint(0,3)
                 if rand == pre_rand:
-                    rand=random.randint(0,4)
-                sub_types=["夜市","老街", "形象商圈", "百貨","市集"]        
+                    rand=random.randint(0,3)
+                sub_types=["夜市","老街", "形象商圈", "市集"]        
                 
             elif types == "古蹟廟宇":
                 rand=random.randint(0,3)
@@ -331,10 +331,10 @@ def getNear(county,typess,loc):
         
         elif county == "彰化":
             if types == "特色商圈":
-                rand=random.randint(0,4)
+                rand=random.randint(0,3)
                 if rand == pre_rand:
-                    rand=random.randint(0,4)
-                sub_types=["夜市","老街", "形象商圈", "百貨","市集"]        
+                    rand=random.randint(0,3)
+                sub_types=["夜市","老街", "形象商圈", "市集"]        
                 
             elif types == "古蹟廟宇":
                 rand=random.randint(0,3)
@@ -374,10 +374,10 @@ def getNear(county,typess,loc):
         
         elif county == "南投":
             if types == "特色商圈":
-                rand=random.randint(0,4)
+                rand=random.randint(0,3)
                 if rand == pre_rand:
-                    rand=random.randint(0,4)
-                sub_types=["夜市","老街", "形象商圈", "百貨","市集"]        
+                    rand=random.randint(0,3)
+                sub_types=["夜市","老街", "形象商圈", "市集"]        
                 
             elif types == "古蹟廟宇":
                 rand=random.randint(0,3)
@@ -414,10 +414,10 @@ def getNear(county,typess,loc):
 
         elif county == "雲林":
             if types == "特色商圈":
-                rand=random.randint(0,4)
+                rand=random.randint(0,3)
                 if rand == pre_rand:
-                    rand=random.randint(0,4)
-                sub_types=["夜市","老街", "形象商圈", "百貨","市集"]        
+                    rand=random.randint(0,3)
+                sub_types=["夜市","老街", "形象商圈", "市集"]        
                 
             elif types == "古蹟廟宇":
                 rand=random.randint(0,3)
@@ -457,10 +457,10 @@ def getNear(county,typess,loc):
         
         elif county == "嘉義":
             if types == "特色商圈":
-                rand=random.randint(0,4)
+                rand=random.randint(0,3)
                 if rand == pre_rand:
-                    rand=random.randint(0,4)
-                sub_types=["夜市","老街", "形象商圈", "百貨","市集"]        
+                    rand=random.randint(0,3)
+                sub_types=["夜市","老街", "形象商圈", "市集"]        
                 
             elif types == "古蹟廟宇":
                 rand=random.randint(0,3)
@@ -500,10 +500,10 @@ def getNear(county,typess,loc):
 
         elif county == "台南":
             if types == "特色商圈":
-                rand=random.randint(0,4)
+                rand=random.randint(0,3)
                 if rand == pre_rand:
-                    rand=random.randint(0,4)
-                sub_types=["夜市","老街", "形象商圈", "百貨","市集"]        
+                    rand=random.randint(0,3)
+                sub_types=["夜市","老街", "形象商圈", "市集"]        
                 
             elif types == "古蹟廟宇":
                 rand=random.randint(0,3)
@@ -546,7 +546,7 @@ def getNear(county,typess,loc):
                 rand=random.randint(0,3)
                 if rand == pre_rand:
                     rand=random.randint(0,3)
-                sub_types=["夜市","老街", "形象商圈", "百貨","市集"]        
+                sub_types=["夜市","老街", "形象商圈","市集"]        
                 
             elif types == "古蹟廟宇":
                 rand=random.randint(0,3)
@@ -586,10 +586,10 @@ def getNear(county,typess,loc):
 
         elif county == "屏東":
             if types == "特色商圈":
-                rand=random.randint(0,3)
+                rand=random.randint(0,2)
                 if rand == pre_rand:
-                    rand=random.randint(0,3)
-                sub_types=["夜市","老街", "百貨","市集"]        
+                    rand=random.randint(0,2)
+                sub_types=["夜市","老街", "市集"]        
                 
             elif types == "古蹟廟宇":
                 rand=random.randint(0,3)
@@ -629,10 +629,10 @@ def getNear(county,typess,loc):
 
         elif county == "宜蘭":
             if types == "特色商圈":
-                rand=random.randint(0,3)
+                rand=random.randint(0,2)
                 if rand == pre_rand:
-                    rand=random.randint(0,3)
-                sub_types=["夜市","老街", "市集", "百貨"]        
+                    rand=random.randint(0,2)
+                sub_types=["夜市","老街", "市集"]        
                 
             elif types == "古蹟廟宇":
                 rand=random.randint(0,3)
@@ -715,10 +715,10 @@ def getNear(county,typess,loc):
 
         elif county == "台東":
             if types == "特色商圈":
-                rand=random.randint(0,2)
+                rand=random.randint(0,1)
                 if rand == pre_rand:
-                    rand=random.randint(0,2)
-                sub_types=["夜市","老街",  "百貨"]        
+                    rand=random.randint(0,1)
+                sub_types=["夜市","老街"]        
                 
             elif types == "古蹟廟宇":
                 rand=random.randint(0,3)
@@ -755,10 +755,10 @@ def getNear(county,typess,loc):
 
         else :
             if types == "特色商圈":
-                rand=random.randint(0,3)
+                rand=random.randint(0,2)
                 if rand == pre_rand:
-                    rand=random.randint(0,3)
-                sub_types=["夜市","老街", "形象商圈", "百貨"]        
+                    rand=random.randint(0,2)
+                sub_types=["夜市","老街", "形象商圈"]        
                 
             elif types == "古蹟廟宇":
                 rand=random.randint(0,3)
