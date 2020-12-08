@@ -636,7 +636,7 @@ def webtextInf(address, update):
     citynum = int(citynum)
 
     #開啟CSV並讀取檔案
-    file =open('weather.csv','r')
+    file =open('weather.csv','r',encoding='gb18030')
     lines=file.readlines()
     file.close()
     row=[]#定義行陣列
@@ -648,6 +648,7 @@ def webtextInf(address, update):
     update.message.reply_text(address + '的天氣狀況：\n' + webtext[0] + webtext[1])
 
     return
+
 
 #===============================================
 #===================網頁用方法===================
